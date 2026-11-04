@@ -40,6 +40,16 @@ class ScopeManager:
         self._blocked_networks: list[ipaddress.IPv4Network | ipaddress.IPv6Network] = []
         self.reload()
 
+    @property
+    def config(self) -> dict[str, Any]:
+        """Return raw parsed scope configuration dictionary."""
+        return dict(self._config)
+
+    @property
+    def allowed_targets(self) -> list[dict[str, Any]]:
+        """Return list of allowed target specifications."""
+        return list(self._allowed_targets)
+
     def _calculate_file_hash(self) -> str:
         """Compute SHA-256 hash of scope.yaml."""
         if not self.scope_path.exists():
