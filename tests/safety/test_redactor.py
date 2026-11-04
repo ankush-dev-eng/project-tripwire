@@ -11,7 +11,9 @@ def test_redact_credit_cards() -> None:
 
 
 def test_redact_jwt() -> None:
-    sample_jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozG4B_fake_signature"
+    sample_jwt = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozG4B_fake_signature"
+    )
     raw = f"Header: Bearer {sample_jwt}"
     redacted = redact_text(raw)
     assert sample_jwt not in redacted

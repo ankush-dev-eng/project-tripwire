@@ -1,6 +1,7 @@
 """Tests for Human-in-the-Loop Approval Gate."""
 
 import pytest
+
 from backend.safety.approval_gate import ApprovalGate, ApprovalRequiredError
 
 

@@ -1,7 +1,9 @@
 """Tests for Global Kill Switch."""
 
 from pathlib import Path
+
 import pytest
+
 from backend.safety.kill_switch import KillSwitch, KillSwitchTrippedError
 
 

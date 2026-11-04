@@ -1,6 +1,7 @@
 """Tests for Rate Limiter and Strain Backoff Engine."""
 
 import pytest
+
 from backend.safety.kill_switch import KillSwitch, KillSwitchTrippedError
 from backend.safety.rate_limiter import RateLimiter
 

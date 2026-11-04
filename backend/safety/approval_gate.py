@@ -1,11 +1,12 @@
 """Human-in-the-Loop Approval Gate for Guarded & State-Changing Probes."""
 
+import time
+import uuid
 from fnmatch import fnmatch
 from pathlib import Path
-import time
 from typing import Any
 from urllib.parse import urlparse
-import uuid
+
 import yaml
 
 
@@ -93,9 +94,7 @@ class ApprovalGate:
         meta = self._approved_tokens[token]
         if meta.get("path") != path or meta.get("method") != method:
             return False
-        if time.time() > meta.get("expires_at", 0):
-            return False
-        return True
+        return not time.time() > meta.get("expires_at", 0)
 
     def approve_request(
         self,

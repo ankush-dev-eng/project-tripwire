@@ -1,7 +1,7 @@
 """Evidence Redactor for PII and Secret Sanitization."""
 
-from collections.abc import Mapping
 import re
+from collections.abc import Mapping
 from typing import Any
 
 # Patterns for sensitive data redaction

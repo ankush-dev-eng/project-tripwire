@@ -1,8 +1,9 @@
 """Thread-safe and process-aware global kill switch."""
 
+import contextlib
 import os
-from pathlib import Path
 import threading
+from pathlib import Path
 
 
 class KillSwitchTrippedError(Exception):
@@ -38,10 +39,8 @@ class KillSwitch:
         with self._thread_lock:
             self._tripped = True
             self._trip_reason = reason
-            try:
+            with contextlib.suppress(OSError):
                 self.trigger_file.write_text(reason, encoding="utf-8")
-            except OSError:
-                pass
 
     def reset(self) -> None:
         """Reset the kill switch to normal operational state."""
@@ -49,10 +48,8 @@ class KillSwitch:
             self._tripped = False
             self._trip_reason = None
             if self.trigger_file.exists():
-                try:
+                with contextlib.suppress(OSError):
                     os.remove(self.trigger_file)
-                except OSError:
-                    pass
 
     def is_tripped(self) -> bool:
         """Check if the kill switch is currently active (in-memory or on disk)."""

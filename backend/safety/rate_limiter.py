@@ -1,10 +1,11 @@
 """Token Bucket Rate Limiter and Dynamic Strain Backoff Monitor."""
 
 import asyncio
+import time
 from collections import deque
 from pathlib import Path
-import time
 from typing import Any
+
 import yaml
 
 from backend.safety.kill_switch import KillSwitch
@@ -106,11 +107,10 @@ class RateLimiter:
     def record_timeout(self) -> None:
         """Record a connection timeout and trip kill switch if exceeding threshold."""
         self._consecutive_timeouts += 1
-        if self._consecutive_timeouts >= self.max_consecutive_timeouts:
-            if self.kill_switch:
-                self.kill_switch.trip(
-                    f"Consecutive timeouts ({self._consecutive_timeouts}) exceeded safety limit"
-                )
+        if self._consecutive_timeouts >= self.max_consecutive_timeouts and self.kill_switch:
+            self.kill_switch.trip(
+                f"Consecutive timeouts ({self._consecutive_timeouts}) exceeded safety limit"
+            )
 
     def _evaluate_strain(self) -> None:
         """Analyze rolling window to detect latency spikes or 5xx error surges."""
@@ -132,12 +132,10 @@ class RateLimiter:
         error_ratio = error_count / len(self._recent_status_codes)
 
         if (
-            p90_latency > self.latency_threshold_ms
-            or error_ratio > self.error_5xx_threshold_ratio
-        ):
-            if not self._in_strain_mode:
-                self._in_strain_mode = True
-                self._strain_start_time = now
+            p90_latency > self.latency_threshold_ms or error_ratio > self.error_5xx_threshold_ratio
+        ) and not self._in_strain_mode:
+            self._in_strain_mode = True
+            self._strain_start_time = now
 
     def is_in_strain_mode(self) -> bool:
         """Check if backoff strain mode is currently active."""

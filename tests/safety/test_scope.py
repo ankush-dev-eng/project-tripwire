@@ -1,7 +1,9 @@
 """Tests for Scope Allowlist Enforcement and Tampering Detection."""
 
 from pathlib import Path
+
 import pytest
+
 from backend.safety.kill_switch import KillSwitch
 from backend.safety.scope import OutOfScopeError, ScopeManager, ScopeTamperingError
 

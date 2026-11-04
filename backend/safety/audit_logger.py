@@ -1,10 +1,10 @@
 """Append-only, SHA-256 hash-chained audit logger with replay verification."""
 
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import threading
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from backend.safety.redactor import redact_data, redact_text
@@ -32,7 +32,7 @@ class AuditLogger:
         if not self.log_path.exists() or self.log_path.stat().st_size == 0:
             return
 
-        with open(self.log_path, "r", encoding="utf-8") as f:
+        with open(self.log_path, encoding="utf-8") as f:
             last_line = ""
             count = 0
             for line in f:
@@ -78,7 +78,7 @@ class AuditLogger:
     ) -> dict[str, Any]:
         """Record an outbound HTTP transaction into the hash-chained audit log."""
         with self._lock:
-            timestamp = datetime.now(timezone.utc).isoformat()
+            timestamp = datetime.now(UTC).isoformat()
 
             # Sanitize request and response data
             safe_req_headers = redact_data(dict(request_headers))
@@ -141,7 +141,7 @@ class AuditLogger:
         expected_prev_hash = GENESIS_HASH
         expected_seq = 0
 
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             for line_no, raw_line in enumerate(f, start=1):
                 raw_line = raw_line.strip()
                 if not raw_line:

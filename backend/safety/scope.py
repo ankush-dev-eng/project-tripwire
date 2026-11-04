@@ -5,6 +5,7 @@ import ipaddress
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+
 import yaml
 
 from backend.safety.kill_switch import KillSwitch
