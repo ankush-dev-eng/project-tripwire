@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="100%" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14181B" />
+      <stop offset="100%" stop-color="#1D2327" />
+    </linearGradient>
+    <linearGradient id="wireGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6F8F7B" stop-opacity="0.2" />
+      <stop offset="50%" stop-color="#4F7A5A" stop-opacity="1" />
+      <stop offset="100%" stop-color="#C79A3B" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="320" fill="url(#bg)" rx="8" />
+
+  <!-- Subtle Blueprint Grid -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#252C31" stroke-width="0.8" />
+  </pattern>
+  <rect width="1200" height="320" fill="url(#grid)" opacity="0.6" />
+
+  <!-- Scope Lock Indicator Badge -->
+  <g transform="translate(940, 30)">
+    <rect width="220" height="32" rx="4" fill="#14181B" stroke="#6F8F7B" stroke-width="1.2" />
+    <circle cx="20" cy="16" r="5" fill="#4F7A5A">
+      <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <text x="36" y="21" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="600" letter-spacing="1">SCOPE-LOCKED / LAB</text>
+  </g>
+
+  <!-- Title & Typography -->
+  <text x="60" y="95" fill="#F2EFE8" font-family="'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif" font-size="44" font-weight="700" letter-spacing="2">PROJECT TRIPWIRE</text>
+  <text x="60" y="135" fill="#D9D4C7" font-family="'Instrument Sans', sans-serif" font-size="18" font-weight="400" letter-spacing="0.5">Agentic Real-Time DAST for B2B Travel Platforms</text>
+  <text x="60" y="165" fill="#6F8F7B" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="500">Autonomous Change Detection • Differential Verification • Automatic Retest</text>
+
+  <!-- Animated Sensor Path & Tripwire Nodes -->
+  <g transform="translate(60, 205)">
+    <!-- Base track -->
+    <line x1="0" y1="40" x2="1080" y2="40" stroke="#2B343B" stroke-width="2" />
+    
+    <!-- Active Scanning Pulse -->
+    <line x1="0" y1="40" x2="300" y2="40" stroke="url(#wireGlow)" stroke-width="3" filter="url(#glow)">
+      <animate attributeName="x1" values="0;780;0" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="x2" values="300;1080;300" dur="4s" repeatCount="indefinite" />
+    </line>
+
+    <!-- Node 1: Deploy Ingest -->
+    <circle cx="100" cy="40" r="14" fill="#1D2327" stroke="#6F8F7B" stroke-width="2" />
+    <text x="100" y="44" text-anchor="middle" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="10">01</text>
+    <text x="100" y="72" text-anchor="middle" fill="#D9D4C7" font-family="'JetBrains Mono', monospace" font-size="11">DEPLOY</text>
+
+    <!-- Node 2: Recon Graph -->
+    <circle cx="320" cy="40" r="14" fill="#1D2327" stroke="#6F8F7B" stroke-width="2" />
+    <text x="320" y="44" text-anchor="middle" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="10">02</text>
+    <text x="320" y="72" text-anchor="middle" fill="#D9D4C7" font-family="'JetBrains Mono', monospace" font-size="11">RECON</text>
+
+    <!-- Node 3: Targeted Plan -->
+    <circle cx="540" cy="40" r="14" fill="#1D2327" stroke="#C79A3B" stroke-width="2" />
+    <text x="540" y="44" text-anchor="middle" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="10">03</text>
+    <text x="540" y="72" text-anchor="middle" fill="#D9D4C7" font-family="'JetBrains Mono', monospace" font-size="11">PLAN</text>
+
+    <!-- Node 4: Safe Exec -->
+    <circle cx="760" cy="40" r="14" fill="#1D2327" stroke="#B5693E" stroke-width="2" />
+    <text x="760" y="44" text-anchor="middle" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="10">04</text>
+    <text x="760" y="72" text-anchor="middle" fill="#D9D4C7" font-family="'JetBrains Mono', monospace" font-size="11">EXEC</text>
+
+    <!-- Node 5: Double Proof -->
+    <circle cx="980" cy="40" r="14" fill="#1D2327" stroke="#4F7A5A" stroke-width="2">
+      <animate attributeName="stroke" values="#4F7A5A;#6F8F7B;#4F7A5A" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <text x="980" y="44" text-anchor="middle" fill="#F2EFE8" font-family="'JetBrains Mono', monospace" font-size="10">05</text>
+    <text x="980" y="72" text-anchor="middle" fill="#D9D4C7" font-family="'JetBrains Mono', monospace" font-size="11">VERIFY</text>
+  </g>
+</svg>
+
