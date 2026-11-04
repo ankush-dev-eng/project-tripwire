@@ -127,6 +127,22 @@ class ApprovalGate:
         }
         return token
 
+    def reject_request(
+        self,
+        request_id: str,
+        operator_id: str = "human_operator",
+        reason: str = "Rejected by operator",
+    ) -> dict[str, Any]:
+        """Operator rejects a pending request."""
+        if request_id not in self._pending_approvals:
+            raise KeyError(f"Approval request {request_id} not found")
+        req = self._pending_approvals.pop(request_id)
+        req["status"] = "REJECTED"
+        req["rejected_by"] = operator_id
+        req["rejection_reason"] = reason
+        req["rejected_at"] = time.time()
+        return req
+
     def get_pending_approvals(self) -> list[dict[str, Any]]:
         """List all requests currently awaiting human sign-off."""
         return list(self._pending_approvals.values())

@@ -75,3 +75,7 @@ class KillSwitch:
         if self.is_tripped():
             reason = self._trip_reason or "Kill switch is active"
             raise KillSwitchTrippedError(f"Operation halted: {reason}")
+
+    # Aliases for API ergonomic compatibility
+    is_active = is_tripped
+    trigger = trip
