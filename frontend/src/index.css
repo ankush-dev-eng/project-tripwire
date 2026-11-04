@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: #2A3339;
+  }
+  body {
+    background-color: #14181B;
+    color: #F2EFE8;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #14181B;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A3339;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3A464E;
+}
+
+/* React Flow custom styling overrides */
+.react-flow__attribution {
+  display: none !important;
+}
+.react-flow__node {
+  border-radius: 8px;
+}
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: #6F8F7B;
+  border: 2px solid #14181B;
+}
+

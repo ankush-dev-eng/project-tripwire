@@ -44,7 +44,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-frontend/dist/
 frontend/dist-ssr/
 frontend/.next/
 frontend/out/
