@@ -4,7 +4,7 @@
 - **Current Phase**: Phase 4 - API Inventory & OpenAPI Synthesis
 - **Current Branch**: `phase/04-inventory-openapi`
 - **Last Updated**: 2026-11-05
-- **Status**: IN_PROGRESS
+- **Status**: PASSED
 - **Iteration Count**: 1
 
 ---
@@ -17,7 +17,7 @@
 | **1** | Safety Layer (SafeHttpClient, Scope, Kill Switch, Audit) | **PASSED** | All safety tests pass; 100% requests in scope |
 | **2** | Voyager Lab Target, Ground Truth, Deploy Simulator | **PASSED** | Lab reproducible; 25+ vulnerabilities seeded & sealed |
 | **3** | Change Detection, Recon, Knowledge Graph | **PASSED** | Endpoint discovery recall >= 90% |
-| **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | **IN_PROGRESS** | Classification F1 >= 0.85 |
+| **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | **PASSED** | Classification F1 >= 0.85 (Achieved F1 = 1.0) |
 | **5** | Targeted Attack Planner, Executors, Double-Proof Verifier | PLANNED | Held-out recall >= 80%; precision >= 90% |
 | **6** | Triage, Severity Scoring, Retest Automation | PLANNED | 100% patched flaws closed; regressions reopened |
 | **7** | Orchestrator, Live WebSocket Stream, Approvals Queue | PLANNED | p95 latency < 200ms; event delivery < 1s |
@@ -81,12 +81,12 @@
 ---
 
 ## Phase 4 Active Tasks
-- [ ] Implement `backend/agents/inventory_agent.py` (cross-references Knowledge Graph, declared gateway routes, and 30/90-day traffic window).
-- [ ] Implement Active, Zombie, and Shadow classification logic (Section 4.2 table).
-- [ ] Generate detailed zombie/shadow reports: last traffic date, auth status, exposed data, risk analysis, owner, action recommendation (decommission, restrict, update).
-- [ ] Implement `backend/agents/openapi_generator.py` (synthesizes reverse-engineered OpenAPI 3.1 specification by-product).
-- [ ] Write evaluation and classification F1 tests (target F1 >= 0.85).
-- [ ] Verify Phase 4 exit gate.
+- [x] Implement `backend/agents/inventory_agent.py` (cross-references Knowledge Graph, declared gateway routes, and 30/90-day traffic window).
+- [x] Implement Active, Zombie, and Shadow classification logic (Section 4.2 table).
+- [x] Generate detailed zombie/shadow reports: last traffic date, auth status, exposed data, risk analysis, owner, action recommendation (decommission, restrict, update).
+- [x] Implement `backend/agents/openapi_generator.py` (synthesizes reverse-engineered OpenAPI 3.1 specification by-product).
+- [x] Write evaluation and classification F1 tests (target F1 >= 0.85).
+- [x] Verify Phase 4 exit gate (F1 = 1.0 achieved).
 
 ---
 
