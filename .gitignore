@@ -65,11 +65,11 @@ Thumbs.db
 *.pem
 *.key
 
-# Playwright & Browser caches
-test-results/
-playwright-report/
-blob-report/
-playwright/.cache/
+# TRIPWIRE Runtime Trigger and Data Files
+.tripwire_kill
+.test_kill
+data/audit.jsonl
+*.jsonl
 
 # SQLite dynamic databases (allow fixtures/schemas, ignore runtime DBs)
 *.db
