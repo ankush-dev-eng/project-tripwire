@@ -1,0 +1,287 @@
+{
+  "version": "1.0",
+  "total_vulnerabilities": 26,
+  "vulnerabilities": [
+    {
+      "id": "VULN-AC-01",
+      "class": "access_control",
+      "name": "Cross-Tenant Booking IDOR",
+      "endpoint": "/api/v3/bookings/{booking_id}",
+      "method": "GET",
+      "parameter": "booking_id",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-AC-02",
+      "class": "access_control",
+      "name": "Unauthenticated Legacy Booking Access",
+      "endpoint": "/v1/bookings/{booking_id}",
+      "method": "GET",
+      "parameter": "booking_id",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-AC-03",
+      "class": "access_control",
+      "name": "Sub-Agent Horizontal Privilege Escalation",
+      "endpoint": "/api/v3/agency/users/{user_id}/promote",
+      "method": "POST",
+      "parameter": "user_id",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-AC-04",
+      "class": "access_control",
+      "name": "Cross-Tenant Invoice IDOR",
+      "endpoint": "/api/v3/bookings/{booking_id}/invoice",
+      "method": "GET",
+      "parameter": "booking_id",
+      "split": "held_out",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-BL-01",
+      "class": "business_logic",
+      "name": "Client-Controlled Fare Tampering",
+      "endpoint": "/api/v3/bookings/hold",
+      "method": "POST",
+      "parameter": "total_amount",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-BL-02",
+      "class": "business_logic",
+      "name": "Negative Quantity Seat Refund Abuse",
+      "endpoint": "/api/v3/bookings/hold",
+      "method": "POST",
+      "parameter": "seat_count",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-BL-03",
+      "class": "business_logic",
+      "name": "Double Refund on Cancellation",
+      "endpoint": "/api/v3/bookings/{booking_id}/cancel",
+      "method": "POST",
+      "parameter": "booking_id",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-BL-04",
+      "class": "business_logic",
+      "name": "Skipped Payment Step to Confirmed",
+      "endpoint": "/api/v3/bookings/{booking_id}/confirm",
+      "method": "POST",
+      "parameter": "booking_id",
+      "split": "held_out",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-BL-05",
+      "class": "business_logic",
+      "name": "Infinite Coupon Code Reuse",
+      "endpoint": "/api/v3/bookings/{booking_id}/apply-coupon",
+      "method": "POST",
+      "parameter": "coupon_code",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-AUTH-01",
+      "class": "auth_session",
+      "name": "Predictable Password Reset Token",
+      "endpoint": "/api/v3/auth/reset-password",
+      "method": "POST",
+      "parameter": "email",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-AUTH-02",
+      "class": "auth_session",
+      "name": "JWT None Algorithm Acceptance",
+      "endpoint": "/api/v3/agency/profile",
+      "method": "GET",
+      "parameter": "Authorization",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-AUTH-03",
+      "class": "auth_session",
+      "name": "Missing Step-Up Auth on Wallet Debit",
+      "endpoint": "/api/v3/wallet/topup",
+      "method": "POST",
+      "parameter": "amount",
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-AUTH-04",
+      "class": "auth_session",
+      "name": "Token Remains Valid Post-Logout",
+      "endpoint": "/api/v3/auth/logout",
+      "method": "POST",
+      "parameter": "Authorization",
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-INJ-01",
+      "class": "injection",
+      "name": "SQL Injection in Flight Search Filter",
+      "endpoint": "/api/v3/flights/search",
+      "method": "GET",
+      "parameter": "airline",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-INJ-02",
+      "class": "injection",
+      "name": "Command Injection in Supplier Diagnostics",
+      "endpoint": "/api/v3/supplier/diagnostics",
+      "method": "GET",
+      "parameter": "host",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-INJ-03",
+      "class": "injection",
+      "name": "Header Injection in Callback Response",
+      "endpoint": "/api/v3/supplier/callback",
+      "method": "POST",
+      "parameter": "X-Supplier-Ref",
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-HYG-01",
+      "class": "api_hygiene",
+      "name": "Mass Assignment on Agency Profile",
+      "endpoint": "/api/v3/agency/profile",
+      "method": "PUT",
+      "parameter": "credit_limit",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-HYG-02",
+      "class": "api_hygiene",
+      "name": "Excessive User Data Exposure",
+      "endpoint": "/api/v3/agency/users",
+      "method": "GET",
+      "parameter": null,
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-HYG-03",
+      "class": "api_hygiene",
+      "name": "Missing Rate Limit on Login Endpoint",
+      "endpoint": "/api/v3/auth/login",
+      "method": "POST",
+      "parameter": null,
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-DAT-01",
+      "class": "data_exposure",
+      "name": "Cleartext Credit Card and CVV Exposure",
+      "endpoint": "/api/v3/bookings/{booking_id}/invoice",
+      "method": "GET",
+      "parameter": "booking_id",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-DAT-02",
+      "class": "data_exposure",
+      "name": "PII Leak in Error Tracebacks",
+      "endpoint": "/api/v3/bookings/error-probe",
+      "method": "GET",
+      "parameter": "debug",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-DAT-03",
+      "class": "data_exposure",
+      "name": "Debug Route Exposes Environment Variables",
+      "endpoint": "/debug/env",
+      "method": "GET",
+      "parameter": null,
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-SSR-01",
+      "class": "server_side",
+      "name": "SSRF in Supplier Webhook Registration",
+      "endpoint": "/api/v3/supplier/webhook",
+      "method": "POST",
+      "parameter": "callback_url",
+      "split": "dev",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-SSR-02",
+      "class": "server_side",
+      "name": "Open Redirect in Authentication Flow",
+      "endpoint": "/api/v3/auth/redirect",
+      "method": "GET",
+      "parameter": "url",
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-SSR-03",
+      "class": "server_side",
+      "name": "Unrestricted Document File Upload",
+      "endpoint": "/api/v3/agency/documents",
+      "method": "POST",
+      "parameter": "file",
+      "split": "held_out",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-ZOM-01",
+      "class": "zombie_shadow",
+      "name": "Zombie v1 API Remains Active in Production",
+      "endpoint": "/v1/bookings/{booking_id}",
+      "method": "GET",
+      "parameter": "booking_id",
+      "split": "dev",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-ZOM-02",
+      "class": "zombie_shadow",
+      "name": "Retired Partner v2 Discount Quote Endpoint",
+      "endpoint": "/api/partner/v2/quote",
+      "method": "POST",
+      "parameter": null,
+      "split": "held_out",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-SHA-01",
+      "class": "zombie_shadow",
+      "name": "Undocumented Shadow API: Internal Supplier Sync",
+      "endpoint": "/internal/supplier-sync",
+      "method": "POST",
+      "parameter": "supplier_id",
+      "split": "dev",
+      "severity": "high"
+    }
+  ]
+}
+
