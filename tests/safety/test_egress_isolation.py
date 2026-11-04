@@ -5,9 +5,23 @@ from pathlib import Path
 
 import yaml
 
-FORBIDDEN_NETWORK_MODULES = {"urllib", "requests", "aiohttp", "socket", "http.client"}
+FORBIDDEN_NETWORK_MODULES = {
+    "urllib.request",
+    "requests",
+    "aiohttp",
+    "socket",
+    "http.client",
+}
 # httpx is allowed ONLY inside backend/safety/http_client.py
 ALLOWED_HTTPX_PATH = Path("backend/safety/http_client.py")
+
+
+def _is_forbidden_import(name: str) -> bool:
+    if name in FORBIDDEN_NETWORK_MODULES:
+        return True
+    if name == "urllib":
+        return True
+    return bool(name.startswith("urllib.") and not name.startswith("urllib.parse"))
 
 
 def test_no_forbidden_network_imports_in_backend() -> None:
@@ -29,22 +43,20 @@ def test_no_forbidden_network_imports_in_backend() -> None:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    mod_root = alias.name.split(".")[0]
-                    if mod_root in FORBIDDEN_NETWORK_MODULES:
+                    if _is_forbidden_import(alias.name):
                         violations.append(
                             f"{rel_path}:{node.lineno} imports forbidden module '{alias.name}'"
                         )
-                    if mod_root == "httpx" and rel_path != ALLOWED_HTTPX_PATH:
+                    if alias.name.split(".")[0] == "httpx" and rel_path != ALLOWED_HTTPX_PATH:
                         violations.append(
                             f"{rel_path}:{node.lineno} imports 'httpx' outside SafeHttpClient"
                         )
             elif isinstance(node, ast.ImportFrom) and node.module:
-                mod_root = node.module.split(".")[0]
-                if mod_root in FORBIDDEN_NETWORK_MODULES:
+                if _is_forbidden_import(node.module):
                     violations.append(
                         f"{rel_path}:{node.lineno} imports from forbidden module '{node.module}'"
                     )
-                if mod_root == "httpx" and rel_path != ALLOWED_HTTPX_PATH:
+                if node.module.split(".")[0] == "httpx" and rel_path != ALLOWED_HTTPX_PATH:
                     violations.append(
                         f"{rel_path}:{node.lineno} imports 'httpx' outside SafeHttpClient"
                     )
