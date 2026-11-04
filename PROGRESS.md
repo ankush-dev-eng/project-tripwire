@@ -1,8 +1,8 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 1 - Safety Layer & Deterministic Egress
-- **Current Branch**: `phase/01-safety`
+- **Current Phase**: Phase 2 - Voyager Lab Target & Ground Truth
+- **Current Branch**: `phase/02-voyager-lab`
 - **Last Updated**: 2026-11-05
 - **Status**: IN_PROGRESS
 - **Iteration Count**: 1
@@ -14,8 +14,8 @@
 | Phase | Description | Status | Exit Gate Condition |
 |---|---|---|---|
 | **0** | Scaffold, CI, Makefile, PROGRESS.md, BENCHMARKS.md | **PASSED** | Clean lint, passing tests, GitHub remote configured |
-| **1** | Safety Layer (SafeHttpClient, Scope, Kill Switch, Audit) | **IN_PROGRESS** | All safety tests pass; 100% requests in scope |
-| **2** | Voyager Lab Target, Ground Truth, Deploy Simulator | PLANNED | Lab reproducible; 25+ vulnerabilities seeded & sealed |
+| **1** | Safety Layer (SafeHttpClient, Scope, Kill Switch, Audit) | **PASSED** | All safety tests pass; 100% requests in scope |
+| **2** | Voyager Lab Target, Ground Truth, Deploy Simulator | **IN_PROGRESS** | Lab reproducible; 25+ vulnerabilities seeded & sealed |
 | **3** | Change Detection, Recon, Knowledge Graph | PLANNED | Endpoint discovery recall >= 90% |
 | **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | PLANNED | Classification F1 >= 0.85 |
 | **5** | Targeted Attack Planner, Executors, Double-Proof Verifier | PLANNED | Held-out recall >= 80%; precision >= 90% |
@@ -46,14 +46,27 @@
 ---
 
 ## Phase 1 Active Tasks
-- [ ] Implement `backend/safety/scope.py` (scope parser & IP/host validator).
-- [ ] Implement `backend/safety/rate_limiter.py` (token bucket + strain tracking).
-- [ ] Implement `backend/safety/kill_switch.py` (thread-safe atomic kill switch).
-- [ ] Implement `backend/safety/audit_logger.py` (append-only hash-chained logger & replay engine).
-- [ ] Implement `backend/safety/http_client.py` (`SafeHttpClient` unified egress).
-- [ ] Implement `backend/safety/approval_gate.py` (human authorization checker).
-- [ ] Write comprehensive unit and property-based tests for safety layer.
-- [ ] Verify Phase 1 exit gate (all safety tests pass; 0 out-of-scope leaks).
+- [x] Implement `backend/safety/scope.py` (scope parser & IP/host validator).
+- [x] Implement `backend/safety/rate_limiter.py` (token bucket + strain tracking).
+- [x] Implement `backend/safety/kill_switch.py` (thread-safe atomic kill switch).
+- [x] Implement `backend/safety/audit_logger.py` (append-only hash-chained logger & replay engine).
+- [x] Implement `backend/safety/http_client.py` (`SafeHttpClient` unified egress).
+- [x] Implement `backend/safety/approval_gate.py` (human authorization checker).
+- [x] Write comprehensive unit and property-based tests for safety layer.
+- [x] Verify Phase 1 exit gate (all safety tests pass; 0 out-of-scope leaks).
+
+---
+
+## Phase 2 Active Tasks
+- [ ] Build Voyager FastAPI Mock B2B Platform with Multi-Tenant Agency models (`Agency_Alpha`, `Agency_Beta`).
+- [ ] Implement travel lifecycle workflows: `/flights/search`, `/hold`, `/book`, `/pay`, `/cancel`, `/refund`.
+- [ ] Seed legacy `/v1/` routes alongside modern `/v3/` routes (zombie APIs).
+- [ ] Seed undocumented route active in traffic (shadow API).
+- [ ] Implement at least 25 seeded vulnerabilities across all 8 classes with individual runtime patch toggles.
+- [ ] Create sealed ground-truth dataset in `lab/ground_truth/vulnerabilities.json`.
+- [ ] Build synthetic traffic and log generator for 30-day and 90-day gateway logs.
+- [ ] Build deploy simulator generating dev/held-out variations with distinct random seeds.
+- [ ] Verify Phase 2 exit gate.
 
 ---
 
