@@ -70,6 +70,16 @@ class RateLimiter:
             return max(1.0, self.requests_per_second * self.backoff_factor)
         return self.requests_per_second
 
+    @property
+    def requests_per_minute(self) -> float:
+        """Return rate limit in requests per minute."""
+        return self.requests_per_second * 60.0
+
+    @property
+    def max_concurrent_requests(self) -> int:
+        """Return maximum concurrent requests allowed."""
+        return self.max_concurrency
+
     async def acquire(self, tokens: float = 1.0) -> None:
         """Acquire token(s) before sending request, sleeping if bucket is depleted."""
         if self.kill_switch and self.kill_switch.is_tripped():
