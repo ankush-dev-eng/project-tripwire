@@ -1,8 +1,8 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 3 - Change Detection, Recon & Knowledge Graph
-- **Current Branch**: `phase/03-recon-graph`
+- **Current Phase**: Phase 4 - API Inventory & OpenAPI Synthesis
+- **Current Branch**: `phase/04-inventory-openapi`
 - **Last Updated**: 2026-11-05
 - **Status**: IN_PROGRESS
 - **Iteration Count**: 1
@@ -16,8 +16,8 @@
 | **0** | Scaffold, CI, Makefile, PROGRESS.md, BENCHMARKS.md | **PASSED** | Clean lint, passing tests, GitHub remote configured |
 | **1** | Safety Layer (SafeHttpClient, Scope, Kill Switch, Audit) | **PASSED** | All safety tests pass; 100% requests in scope |
 | **2** | Voyager Lab Target, Ground Truth, Deploy Simulator | **PASSED** | Lab reproducible; 25+ vulnerabilities seeded & sealed |
-| **3** | Change Detection, Recon, Knowledge Graph | **IN_PROGRESS** | Endpoint discovery recall >= 90% |
-| **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | PLANNED | Classification F1 >= 0.85 |
+| **3** | Change Detection, Recon, Knowledge Graph | **PASSED** | Endpoint discovery recall >= 90% |
+| **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | **IN_PROGRESS** | Classification F1 >= 0.85 |
 | **5** | Targeted Attack Planner, Executors, Double-Proof Verifier | PLANNED | Held-out recall >= 80%; precision >= 90% |
 | **6** | Triage, Severity Scoring, Retest Automation | PLANNED | 100% patched flaws closed; regressions reopened |
 | **7** | Orchestrator, Live WebSocket Stream, Approvals Queue | PLANNED | p95 latency < 200ms; event delivery < 1s |
@@ -71,12 +71,22 @@
 ---
 
 ## Phase 3 Active Tasks
-- [ ] Implement `backend/agents/change_detector.py` (webhooks, bundle hash diff, traffic log diff).
-- [ ] Implement `backend/agents/recon_crawler.py` (role-based headless crawler and pattern probe).
-- [ ] Implement `backend/agents/js_extractor.py` (AST/regex route extractor parsing frontend JS bundles).
-- [ ] Implement `backend/graph/knowledge_graph.py` (NetworkX application topology model).
-- [ ] Connect discovery pipeline to `SafeHttpClient` egress.
-- [ ] Verify Phase 3 exit gate (endpoint discovery recall >= 90%).
+- [x] Implement `backend/agents/change_detector.py` (webhooks, bundle hash diff, traffic log diff).
+- [x] Implement `backend/agents/recon_crawler.py` (role-based headless crawler and pattern probe).
+- [x] Implement `backend/agents/js_extractor.py` (AST/regex route extractor parsing frontend JS bundles).
+- [x] Implement `backend/graph/knowledge_graph.py` (NetworkX application topology model).
+- [x] Connect discovery pipeline to `SafeHttpClient` egress.
+- [x] Verify Phase 3 exit gate (endpoint discovery recall >= 90%).
+
+---
+
+## Phase 4 Active Tasks
+- [ ] Implement `backend/agents/inventory_agent.py` (cross-references Knowledge Graph, declared gateway routes, and 30/90-day traffic window).
+- [ ] Implement Active, Zombie, and Shadow classification logic (Section 4.2 table).
+- [ ] Generate detailed zombie/shadow reports: last traffic date, auth status, exposed data, risk analysis, owner, action recommendation (decommission, restrict, update).
+- [ ] Implement `backend/agents/openapi_generator.py` (synthesizes reverse-engineered OpenAPI 3.1 specification by-product).
+- [ ] Write evaluation and classification F1 tests (target F1 >= 0.85).
+- [ ] Verify Phase 4 exit gate.
 
 ---
 
