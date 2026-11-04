@@ -179,3 +179,10 @@ async def test_openapi_spec_endpoint(test_client: httpx.AsyncClient) -> None:
     spec = resp.json()
     assert spec["openapi"] == "3.1.0"
     assert "paths" in spec
+
+
+@pytest.mark.asyncio
+async def test_serve_frontend_spa(test_client: httpx.AsyncClient) -> None:
+    resp = await test_client.get("/")
+    assert resp.status_code == 200
+    assert "TRIPWIRE" in resp.text

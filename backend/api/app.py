@@ -13,10 +13,13 @@ Exposes REST APIs and a real-time duplex WebSocket event stream for:
 import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from backend.orchestrator import OrchestratorStatus, TripwireOrchestrator
@@ -327,3 +330,23 @@ async def websocket_event_stream(websocket: WebSocket) -> None:
             task.cancel()
     finally:
         orchestrator.remove_subscriber(queue)
+
+
+# -------------------------------------------------------------
+# 10. Frontend Single Page Application Static File Serving
+# -------------------------------------------------------------
+frontend_dist = Path("frontend/dist")
+if frontend_dist.exists() and (frontend_dist / "index.html").exists():
+    assets_dir = frontend_dist / "assets"
+    if assets_dir.exists():
+        api_app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @api_app.get("/{full_path:path}")
+    async def serve_spa(full_path: str) -> FileResponse:
+        # Avoid intercepting API or WebSocket routes
+        if full_path.startswith("api") or full_path.startswith("ws"):
+            raise HTTPException(status_code=404, detail="Not found")
+        target_file = frontend_dist / full_path
+        if target_file.is_file():
+            return FileResponse(target_file)
+        return FileResponse(frontend_dist / "index.html")
