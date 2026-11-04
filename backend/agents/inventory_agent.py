@@ -185,21 +185,29 @@ class InventoryAgent:
             return stats[exact_key]
 
         # Convert template e.g. /v1/bookings/{booking_id} to regex
-        regex_pattern = re.sub(r"\{[^}]+\}", r"[^/]+", path_template)
-        pattern = re.compile(f"^{method} {regex_pattern}$")
+        param_names = re.findall(r"\{([^}]+)\}", path_template)
+        capture_pattern = re.sub(r"\{([^}]+)\}", r"(?P<\1>[^/]+)", path_template)
+        pattern = re.compile(f"^{method} {capture_pattern}$")
 
         total_hits = 0
         latest_ts = None
         in_window = False
 
+        clean_tmpl = path_template.split("?")[0]
+        ep_id = f"{method} {clean_tmpl}"
+
         for k, v in stats.items():
-            if pattern.match(k):
+            m = pattern.match(k)
+            if m:
                 total_hits += v["hits"]
                 if v.get("in_window"):
                     in_window = True
                 curr_ts = v.get("last_traffic")
                 if curr_ts and (latest_ts is None or curr_ts > latest_ts):
                     latest_ts = curr_ts
+                for p_name in param_names:
+                    val = m.group(p_name)
+                    self.kg.add_parameter(ep_id, p_name, location="path", observed_value=val)
 
         if total_hits > 0:
             return {
