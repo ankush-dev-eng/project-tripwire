@@ -40,6 +40,9 @@ dev = [
 [project.scripts]
 tripwire = "backend.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["backend*", "lab*", "benchmarks*"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
