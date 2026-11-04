@@ -94,11 +94,9 @@ class DoubleProofVerifier:
             primary_request={
                 "method": primary_req.get("method", "GET"),
                 "url": primary_req.get("url", ""),
-                "headers": {
-                    k: (v if k.lower() != "authorization" else "REDACTED")
-                    for k, v in (primary_req.get("headers") or {}).items()
-                },
+                "headers": dict(primary_req.get("headers") or {}),
                 "body": primary_req.get("json"),
+                "params": primary_req.get("params"),
             },
             primary_response={
                 "status_code": primary_resp.status_code,
@@ -109,11 +107,9 @@ class DoubleProofVerifier:
             negative_control_request={
                 "method": control_req.get("method", "GET"),
                 "url": control_req.get("url", ""),
-                "headers": {
-                    k: (v if k.lower() != "authorization" else "REDACTED")
-                    for k, v in (control_req.get("headers") or {}).items()
-                },
+                "headers": dict(control_req.get("headers") or {}),
                 "body": control_req.get("json"),
+                "params": control_req.get("params"),
             },
             negative_control_response={
                 "status_code": control_resp.status_code,

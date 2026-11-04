@@ -61,11 +61,13 @@ def get_current_user(authorization: str | None) -> User:
     token = authorization.replace("Bearer ", "").strip()
 
     # VULN-AUTH-02: Check if unsigned JWT accepted
-    if not PatchRegistry.is_patched("VULN-AUTH-02") and token.startswith("none_alg_"):
-        # Simulated 'none' alg payload: none_alg_<user_id>
-        user_id = token.replace("none_alg_", "")
-        if user_id in db.users:
-            return db.users[user_id]
+    if token.startswith("none_alg_"):
+        if not PatchRegistry.is_patched("VULN-AUTH-02"):
+            # Simulated 'none' alg payload: none_alg_<user_id>
+            user_id = token.replace("none_alg_", "")
+            if user_id in db.users:
+                return db.users[user_id]
+        raise HTTPException(status_code=401, detail="Unsigned 'none' algorithm token rejected")
 
     # Look up in active sessions
     if token in db.active_sessions:
