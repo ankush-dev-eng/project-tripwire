@@ -170,6 +170,8 @@ class KnowledgeGraph:
                 endpoints.append(d)
         return endpoints
 
+    get_all_endpoints = get_endpoints
+
     def get_endpoint_count(self) -> int:
         return len(self.get_endpoints())
 
@@ -181,6 +183,8 @@ class KnowledgeGraph:
             if node_data.get("node_type") == "parameter":
                 params.append(node_data)
         return params
+
+    get_endpoint_parameters = get_parameters_for_endpoint
 
     def export_topology_for_ui(self) -> dict[str, Any]:
         """Export graph formatted for React Flow visualization (nodes & edges)."""

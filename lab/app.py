@@ -78,8 +78,12 @@ def get_current_user(authorization: str | None) -> User:
         if u.email in token or u.user_id in token:
             return u
 
-    # By default, authenticate as alpha agent for test simulation
-    return db.users["USR_ALPHA_AGENT"]
+    if "test" in token or "alpha" in token:
+        return db.users["USR_ALPHA_AGENT"]
+    if "beta" in token:
+        return db.users["USR_BETA_AGENT"]
+
+    raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 # -------------------------------------------------------------

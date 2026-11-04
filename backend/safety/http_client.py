@@ -59,6 +59,7 @@ class SafeHttpClient:
         approval_gate: ApprovalGate | None = None,
         audit_logger: AuditLogger | None = None,
         timeout: float = 10.0,
+        transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self.kill_switch = kill_switch or KillSwitch.get_instance()
         self.scope_manager = scope_manager or ScopeManager(kill_switch=self.kill_switch)
@@ -66,11 +67,13 @@ class SafeHttpClient:
         self.approval_gate = approval_gate or ApprovalGate()
         self.audit_logger = audit_logger or AuditLogger()
         self.default_timeout = timeout
+        self.transport = transport
         self._async_client: httpx.AsyncClient | None = None
 
     async def _get_client(self) -> httpx.AsyncClient:
         if self._async_client is None or self._async_client.is_closed:
             self._async_client = httpx.AsyncClient(
+                transport=self.transport,
                 timeout=httpx.Timeout(self.default_timeout),
                 follow_redirects=False,  # Redirects must be inspected explicitly
             )
@@ -96,6 +99,7 @@ class SafeHttpClient:
         params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
         json_data: Any | None = None,
+        json: Any | None = None,
         data: Any | None = None,
         approval_token: str | None = None,
         timeout: float | None = None,
@@ -104,6 +108,7 @@ class SafeHttpClient:
         """Execute a secure, scope-verified, rate-governed outbound HTTP request."""
         method = method.upper()
         req_headers = dict(headers or {})
+        effective_json = json if json is not None else json_data
 
         # 1. Check Global Kill Switch
         self.kill_switch.check_or_raise()
@@ -132,7 +137,7 @@ class SafeHttpClient:
                 url=url,
                 params=params,
                 headers=req_headers,
-                json=json_data,
+                json=effective_json,
                 data=data,
                 timeout=req_timeout,
             )
