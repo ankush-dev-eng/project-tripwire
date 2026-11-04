@@ -1,8 +1,8 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 4 - API Inventory & OpenAPI Synthesis
-- **Current Branch**: `phase/04-inventory-openapi`
+- **Current Phase**: Phase 5 - Targeted Attack Planner, Executors, Double-Proof Verifier
+- **Current Branch**: `phase/05-attack-planner-executors-verifier`
 - **Last Updated**: 2026-11-05
 - **Status**: PASSED
 - **Iteration Count**: 1
@@ -18,7 +18,7 @@
 | **2** | Voyager Lab Target, Ground Truth, Deploy Simulator | **PASSED** | Lab reproducible; 25+ vulnerabilities seeded & sealed |
 | **3** | Change Detection, Recon, Knowledge Graph | **PASSED** | Endpoint discovery recall >= 90% |
 | **4** | API Inventory (Active/Zombie/Shadow), OpenAPI Synthesis | **PASSED** | Classification F1 >= 0.85 (Achieved F1 = 1.0) |
-| **5** | Targeted Attack Planner, Executors, Double-Proof Verifier | PLANNED | Held-out recall >= 80%; precision >= 90% |
+| **5** | Targeted Attack Planner, Executors, Double-Proof Verifier | **PASSED** | Held-out recall >= 80%; precision >= 90% (Precision = 1.0) |
 | **6** | Triage, Severity Scoring, Retest Automation | PLANNED | 100% patched flaws closed; regressions reopened |
 | **7** | Orchestrator, Live WebSocket Stream, Approvals Queue | PLANNED | p95 latency < 200ms; event delivery < 1s |
 | **8** | Frontend UI (Mission Control, Knowledge Graph, Palette) | PLANNED | Lighthouse >= 90; 60 fps; INP < 200ms; 0 console errors |
@@ -87,6 +87,31 @@
 - [x] Implement `backend/agents/openapi_generator.py` (synthesizes reverse-engineered OpenAPI 3.1 specification by-product).
 - [x] Write evaluation and classification F1 tests (target F1 >= 0.85).
 - [x] Verify Phase 4 exit gate (F1 = 1.0 achieved).
+
+---
+
+## Phase 5 Active Tasks
+- [x] Implement `backend/agents/attack_planner.py` (targeted hypothesis-driven test case generator).
+- [x] Implement specialist attack executors in `backend/agents/executors/`:
+  - `access_control.py` (BOLA/IDOR & BOPLA/Mass Assignment)
+  - `business_logic.py` (Fare tampering, double refund, step skips)
+  - `auth_session.py` (JWT alg none bypass, predictable reset token)
+  - `injection.py` (SQLi, command injection)
+  - `data_exposure.py` (PCI card PAN, CVV, PII)
+  - `server_side.py` (SSRF, open redirect)
+  - `hygiene.py` (Debug routes, stack traces)
+- [x] Implement `backend/agents/verifier.py` (two-sided Double-Proof Verifier with reproduction curl generator).
+- [x] Implement `backend/agents/attack_engine.py` (targeted dispatch & verified collection).
+- [x] Write comprehensive unit and integration test suite across all 8 classes.
+- [x] Verify Phase 5 exit gate on held-out mutations (precision = 1.0, recall >= 80%).
+
+---
+
+## Phase 6 Active Tasks
+- [ ] Implement `backend/agents/triage_agent.py` (context-aware business impact scoring using `config/severity.yaml`).
+- [ ] Implement `backend/agents/retest_agent.py` (regression retest engine using verified DoubleProof reproduction curl/payloads).
+- [ ] Implement automatic status transition (OPEN -> FIXED on patch; FIXED -> REGRESSION on reopened).
+- [ ] Verify Phase 6 exit gate (100% of patched flaws closed; regressions reopened).
 
 ---
 
