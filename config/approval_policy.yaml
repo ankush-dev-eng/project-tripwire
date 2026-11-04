@@ -1,0 +1,39 @@
+# TRIPWIRE Human-In-The-Loop Approval Policy
+# Specifies which test executions require manual human sign-off before dispatch.
+
+version: "1.0"
+mode: "strict"   # "strict" requires approval, "autonomous_safe" auto-approves read-only
+
+# Actions that ALWAYS require explicit human approval token
+guarded_actions:
+  - action_type: "state_change"
+    path_patterns:
+      - "*/pay"
+      - "*/payment*"
+      - "*/cancel*"
+      - "*/refund*"
+      - "*/wallet/debit"
+      - "*/wallet/credit"
+    description: "Financial transactions and booking lifecycle cancellations"
+    requires_approval: true
+
+  - action_type: "destructive"
+    methods:
+      - "DELETE"
+    path_patterns:
+      - "*"
+    description: "Any resource deletion operation"
+    requires_approval: true
+
+  - action_type: "privilege_escalation_attempt"
+    path_patterns:
+      - "*/admin/users/promote"
+      - "*/roles/update"
+    description: "Modifications to administrative hierarchy"
+    requires_approval: true
+
+auto_approved_actions:
+  - methods: ["GET", "HEAD", "OPTIONS"]
+    path_patterns: ["*"]
+    description: "Read-only idempotent probes"
+

@@ -1,0 +1,34 @@
+# TRIPWIRE Target Scope Allowlist
+# CRITICAL: Agents are NEVER permitted to modify this file.
+# Only human administrators may alter targets in this allowlist.
+# Any request to a host/port outside this list is immediately blocked, logged, and trips the kill switch.
+
+version: "1.0"
+environment: "lab"
+
+allowed_targets:
+  - host: "127.0.0.1"
+    ports: [8000, 8001, 8080, 8888]
+    protocol: "http"
+    description: "Voyager Lab Local Targets"
+  - host: "localhost"
+    ports: [8000, 8001, 8080, 8888]
+    protocol: "http"
+    description: "Voyager Lab Local Targets (localhost alias)"
+
+blocked_cidrs:
+  - "0.0.0.0/8"
+  - "10.0.0.0/8"
+  - "100.64.0.0/10"
+  - "169.254.0.0/16"       # Cloud metadata / link-local
+  - "172.16.0.0/12"
+  - "192.168.0.0/16"
+  - "198.18.0.0/15"
+  - "::/128"
+  - "::1/128"
+  - "fc00::/7"
+  - "fe80::/10"
+
+allow_external_scans: false
+enforce_strict_sni: true
+

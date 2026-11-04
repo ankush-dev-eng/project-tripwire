@@ -1,0 +1,23 @@
+# TRIPWIRE Rate Limiting and Strain Backoff Configuration
+
+version: "1.0"
+
+rate_limiting:
+  requests_per_second: 15
+  burst_capacity: 25
+  max_concurrent_connections: 5
+
+strain_backoff:
+  enabled: true
+  latency_threshold_ms: 500       # If p90 response time exceeds 500ms, back off
+  error_5xx_threshold_ratio: 0.05 # If > 5% requests return 5xx over rolling window, back off
+  rolling_window_requests: 20
+  backoff_factor: 0.5             # Halve throughput on strain
+  cooldown_seconds: 10            # Time to wait before probing recovery
+  max_retries: 3
+
+kill_switch:
+  auto_trip_on_critical_strain: true
+  max_consecutive_timeouts: 5
+  auto_trip_on_out_of_scope: true
+

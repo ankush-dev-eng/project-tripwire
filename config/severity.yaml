@@ -1,0 +1,38 @@
+# TRIPWIRE Business-Context Severity Weights
+
+version: "1.0"
+
+# Base Vulnerability Class Weights (0.0 - 1.0)
+class_weights:
+  access_control: 0.95
+  business_logic: 0.90
+  auth_session: 0.85
+  injection: 0.85
+  server_side: 0.80
+  api_hygiene: 0.60
+  data_exposure: 0.75
+  zombie_shadow: 0.65
+
+# Business Asset Multipliers
+asset_weights:
+  payments_refunds: 1.50      # Direct financial transaction or wallet impact
+  credit_balance: 1.40        # Agency credit limit or deposit balance
+  pii_traveller: 1.25         # Passports, credit cards, dates of birth
+  supplier_credentials: 1.35  # GDS / Airline / Hotel supplier API keys
+  booking_records: 1.15       # PNRs, ticket issuance records
+  search_catalog: 0.80        # Public fare search, inventory caching
+
+# Exploitability Multipliers
+exploitability_weights:
+  unauthenticated: 1.30       # Remotely exploitable without credentials
+  cross_tenant: 1.40          # One agency accesses/modifies another agency
+  subagent_to_admin: 1.35     # Low-privilege user escalates to admin
+  authenticated_same_role: 1.00 # Exploitable within same role/tenant
+
+# Severity Band Cutoffs
+thresholds:
+  critical: 1.50
+  high: 1.10
+  medium: 0.70
+  low: 0.00
+
