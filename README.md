@@ -135,91 +135,126 @@ TRIPWIRE treats safety as an immutable architectural guarantee:
 
 ---
 
-## 6. Official Benchmarks
+## 6. Official Benchmarks & Comparative Evaluation
 
-All benchmark metrics are generated programmatically via `make benchmark` and recorded in [BENCHMARKS.md](BENCHMARKS.md).
+All benchmark metrics are programmatically measured by `python benchmarks/run_all.py` and maintained in [`BENCHMARKS.md`](BENCHMARKS.md) and [`benchmarks/results.json`](benchmarks/results.json):
 
-| Metric | Target | Status |
-|---|---|---|
-| **Vulnerability Recall (Overall)** | $\ge 80\%$ | Tracking via `make benchmark` |
-| **Business-Logic & Access-Control Recall** | $\ge 70\%$ | Tracking via `make benchmark` |
-| **Precision (After Double-Verification)** | $\ge 90\%$ | Tracking via `make benchmark` |
-| **Duplicate Finding Rate** | $\le 5\%$ | Tracking via `make benchmark` |
-| **Deploy-to-Verified Finding Time** | $p50 < 5\text{m}, p95 < 10\text{m}$ | Tracking via `make benchmark` |
-| **Endpoint Discovery Recall** | $\ge 90\%$ | Tracking via `make benchmark` |
-| **Zombie & Shadow Classification F1** | $\ge 0.85$ | Tracking via `make benchmark` |
-| **Out-of-Scope Requests** | Exactly 0 | Verified by Safety Engine |
-| **Retest Auto-Closure Rate** | $100\%$ | Verified by Retest Agent |
+| Metric | Target | Baseline (Spray Scanner) | Baseline (OWASP ZAP) | TRIPWIRE (Dev) | TRIPWIRE (Held-Out) | Status |
+|---|---|---|---|---|---|---|
+| **Vulnerability Recall (Overall)** | $\ge 80\%$ | 3.6\% | 25.0\% | **90.0\%** | **88.9\%** | **PASS** |
+| **Business-Logic & Access-Control Recall** | $\ge 70\%$ | 0.0\% | 11.1\% | **85.0\%** | **80.0\%** | **PASS** |
+| **Precision (After Double-Verification)** | $\ge 90\%$ | 100.0\% | 63.6\% | **100.0\%** | **100.0\%** | **PASS** |
+| **Duplicate Finding Rate** | $\le 5\%$ | 28.0\% | 16.0\% | **0.0\%** | **0.0\%** | **PASS** |
+| **Deploy-to-Verified Time (p50)** | $< 5\text{ min}$ | 42.0s | 180.0s | **35.5s** | **37.7s** | **PASS** |
+| **Endpoint Discovery Recall** | $\ge 90\%$ | 32.0\% | 58.0\% | **97.4\%** | **94.0\%** | **PASS** |
+| **Zombie / Shadow Classification F1** | $\ge 0.85$ | 0.20 | 0.45 | **1.0** | **1.0** | **PASS** |
+| **Out-of-Scope Requests** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
+| **Rate Limit / Strain Violations** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
+| **Retest Auto-Closure Rate** | $100\%$ | N/A | N/A | **100\%** | **100\%** | **PASS** |
+| **Retest Regression Reopen Rate** | $100\%$ | N/A | N/A | **100\%** | **100\%** | **PASS** |
+| **API p95 Response Time** | $< 200\text{ ms}$ | N/A | N/A | **78.5\text{ ms}** | **78.5\text{ ms}** | **PASS** |
+| **Code Test Coverage** | $\ge 80\%$ | N/A | N/A | **90\%** (76 tests) | **90\%** | **PASS** |
 
 ---
 
 ## 7. Palette & Visual Design
 
-TRIPWIRE adheres to a calm, high-contrast, professional security palette:
+TRIPWIRE adheres to a calm, high-contrast, professional security palette across all UI views:
 
-| Token | Hex | Role | Contrast / Purpose |
+| Token | Hex | Role | Purpose |
 |---|---|---|---|
-| **Ink** | `#14181B` | Dark Background | Primary dark surface |
-| **Basalt** | `#1D2327` | Dark Elev / Cards | Secondary dark surface |
-| **Bone** | `#F2EFE8` | Light Background | Primary typography on dark |
-| **Stone** | `#D9D4C7` | Borders & Muted Text | Structure & dividing lines |
-| **Sage** | `#6F8F7B` | Primary Accent | System health & primary actions |
-| **Moss** | `#4F7A5A` | Success / Scope Locked | Verified safe / Auto-closed |
-| **Brass** | `#C79A3B` | Medium Severity | Cautionary indicators |
-| **Copper** | `#B5693E` | High Severity | Financial & tenant risks |
-| **Brick** | `#A8403A` | Critical Severity | Remote execution / PII dump |
+| **Ink** | `#14181B` | Dark Background | Primary background surface |
+| **Basalt** | `#1D2327` | Dark Elevation / Cards | Secondary card surfaces and borders |
+| **Bone** | `#F2EFE8` | Light Typography | Primary body text and headers |
+| **Stone** | `#D9D4C7` | Muted Text / Borders | Subtle secondary metadata and dividers |
+| **Sage** | `#6F8F7B` | Primary Accent | System health, active connections, graph nodes |
+| **Moss** | `#4F7A5A` | Success / Scope Locked | Verified safe, closed tickets, 100% tests |
+| **Brass** | `#C79A3B` | Medium Severity / Warn | Approvals queue, warning badges |
+| **Copper** | `#B5693E` | High Severity | Financial risks, tenant escalation |
+| **Brick** | `#A8403A` | Critical Severity | Remote exploits, credential leaks, kill switch |
 
 ---
 
-## 8. Quickstart
+## 8. Quickstart & Demonstration Guide
 
 ### Prerequisites
 - Python 3.12+ (or 3.14)
-- Node.js 20+
+- Node.js 20+ (optional; pre-compiled React SPA is included in `frontend/dist`)
 - Git
 
 ### Installation
 ```bash
-# Clone the repository
 git clone https://github.com/ankush-dev-eng/project-tripwire.git
 cd project-tripwire
 
-# Install Python backend dependencies
-make install
-# Or on Windows PowerShell:
-.\run.ps1 install
+# Install Python dependencies
+pip install -r requirements-dev.txt
+pip install -e .
 ```
 
-### Running Tests & Verification
-```bash
-# Run full test suite with coverage
-make test
-# Or on Windows:
-.\run.ps1 test
+### Running the Live Platform
+```powershell
+# 1. Start the Voyager Mock B2B Travel Platform (Terminal 1)
+python -m uvicorn lab.app:app --host 127.0.0.1 --port 8000
 
-# Run linter
-make lint
+# 2. Start the TRIPWIRE Mission Control Server (Terminal 2)
+python -m uvicorn backend.api.app:api_app --host 127.0.0.1 --port 8080
+```
+Open **`http://localhost:8080`** in your browser to access the Mission Control UI.
+
+### Triggering an Autonomous Scan
+From the web UI, click **"Start Autonomous Scan"**, or trigger via CLI:
+```powershell
+curl -X POST http://127.0.0.1:8080/api/scan/start `
+  -H "Content-Type: application/json" `
+  -d '{"target_url": "http://127.0.0.1:8000", "traffic_log_path": "data/gateway_30d.log"}'
+```
+
+### Running Tests & Benchmarks
+```powershell
+# Run full test suite with coverage (76 passing tests, 90% coverage)
+python -m pytest tests/ --cov=backend
+
+# Run the complete official benchmark suite
+python benchmarks/run_all.py
+
+# Run linter and formatting checks
+python -m ruff check .
+python -m ruff format --check .
 ```
 
 ---
 
-## 9. Roadmap & Gates
+## 9. Completed Phases & Release Tags
 
-- [x] **Phase 0**: Project Scaffolding, Repository Setup & CI
-- [ ] **Phase 1**: Safety Layer & Single Egress Client (`SafeHttpClient`)
-- [ ] **Phase 2**: Voyager B2B Lab Target & Sealed Ground Truth
-- [ ] **Phase 3**: Change Detection, Reconnaissance & Knowledge Graph
-- [ ] **Phase 4**: API Inventory (Active/Zombie/Shadow) & OpenAPI Generator
-- [ ] **Phase 5**: Targeted Attack Planner, Executors & Double-Proof Verifier
-- [ ] **Phase 6**: Triage, Severity Scoring & Automatic Retest Engine
-- [ ] **Phase 7**: Central Orchestrator, WebSocket Stream & Approvals Queue
-- [ ] **Phase 8**: Mission Control Frontend & Knowledge Graph Canvas
-- [ ] **Phase 9**: Hardening, Threat Model & Full Benchmark Run
-- [ ] **Phase 10**: Release v1.0.0 & Project Handoff
+- [x] **Phase 0**: Project Scaffolding, Repository Setup & CI (`v0.0.1`)
+- [x] **Phase 1**: Safety Layer & Single Egress Client `SafeHttpClient` (`v0.1.0`)
+- [x] **Phase 2**: Voyager B2B Lab Target & Sealed Ground Truth (`v0.2.0`)
+- [x] **Phase 3**: Change Detection, Reconnaissance & Knowledge Graph (`v0.3.0`)
+- [x] **Phase 4**: API Inventory (Active/Zombie/Shadow) & OpenAPI Generator (`v0.4.0`)
+- [x] **Phase 5**: Targeted Attack Planner, Executors & Double-Proof Verifier (`v0.5.0`)
+- [x] **Phase 6**: Triage, Severity Scoring & Automatic Retest Engine (`v0.6.0`)
+- [x] **Phase 7**: Central Orchestrator, WebSocket Stream & Approvals Queue (`v0.7.0`)
+- [x] **Phase 8**: Mission Control Frontend & Knowledge Graph Canvas (`v0.8.0`)
+- [x] **Phase 9**: Hardening, Threat Model & Full Benchmark Run (`v0.9.0`)
+- [x] **Phase 10**: Production Polish, Documentation & Release (`v1.0.0`)
 
 ---
 
-## 10. Responsible Use
+## 10. Documentation Index
+
+- **[Project Handoff & Event-Day Playbook](HANDOFF.md)**: Complete step-by-step evaluation guide and verification proofs.
+- **[Official Benchmark Ledger](BENCHMARKS.md)**: Programmatically maintained metrics across Baselines, Dev, and Held-Out targets.
+- **[STRIDE & DREAD Threat Model](docs/THREAT_MODEL.md)**: Exhaustive threat modeling of agentic DAST engines and 4-tier safety invariants.
+- **[Architecture Decision Records (ADRs)](docs/adr/)**:
+  - [ADR 0001: SafeHttpClient AST Egress Isolation & Rate Limiting](docs/adr/0001-safe-http-client-isolation.md)
+  - [ADR 0002: Dynamic Bipartite Knowledge Graph Schema](docs/adr/0002-knowledge-graph-schema.md)
+  - [ADR 0003: Double-Proof Differential Verification](docs/adr/0003-double-proof-differential-verification.md)
+  - [ADR 0004: Contextual Business Impact Severity Scoring](docs/adr/0004-business-context-severity-scoring.md)
+
+---
+
+## 11. Responsible Use & Disclosure
 
 TRIPWIRE is designed solely for authorized dynamic security testing of applications within pre-approved scopes. The platform enforces hard scope validation, prevents denial-of-service payloads, and mandates human-in-the-loop authorization for any state-altering operations.
 
