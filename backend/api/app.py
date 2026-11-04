@@ -18,7 +18,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -350,3 +350,10 @@ if frontend_dist.exists() and (frontend_dist / "index.html").exists():
         if target_file.is_file():
             return FileResponse(target_file)
         return FileResponse(frontend_dist / "index.html")
+else:
+
+    @api_app.get("/")
+    async def serve_fallback_spa() -> HTMLResponse:
+        return HTMLResponse(
+            "<!DOCTYPE html><html><head><title>PROJECT TRIPWIRE</title></head><body><h1>PROJECT TRIPWIRE Mission Control</h1></body></html>"
+        )

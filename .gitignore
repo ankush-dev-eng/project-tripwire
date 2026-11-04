@@ -8,6 +8,7 @@ env/
 build/
 develop-eggs/
 dist/
+!frontend/dist/
 downloads/
 eggs/
 .eggs/
@@ -15,6 +16,7 @@ lib/
 lib64/
 parts/
 sdist/
+!frontend/dist/
 var/
 wheels/
 *.egg-info/
