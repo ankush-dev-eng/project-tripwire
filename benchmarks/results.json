@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-04T22:24:23.096767+00:00",
+    "commit": "4e5888a",
+    "evaluator_version": "v0.9.0",
+    "seed": 42,
+    "total_benchmark_time_s": 48.09
+  },
+  "baselines": {
+    "spray_scanner": {
+      "name": "Baseline (Spray Scanner)",
+      "total_requests": 15,
+      "detected_vuln_ids": [
+        "VULN-EXP-01"
+      ],
+      "recall": 0.0357,
+      "business_logic_recall": 0.0,
+      "precision": 1.0,
+      "duplicate_rate": 0.28,
+      "deploy_to_verified_p50_s": 42.0,
+      "deploy_to_verified_p95_s": 85.0,
+      "endpoint_discovery_recall": 0.32,
+      "zombie_shadow_f1": 0.2
+    },
+    "zap_standard": {
+      "name": "Baseline (ZAP Standard)",
+      "total_requests": 650,
+      "detected_vuln_ids": [
+        "VULN-AC-02",
+        "VULN-HYG-01",
+        "VULN-INJ-02",
+        "VULN-EXP-02",
+        "VULN-SSRF-01",
+        "VULN-EXP-01",
+        "VULN-INJ-01"
+      ],
+      "recall": 0.25,
+      "business_logic_recall": 0.1111,
+      "precision": 0.6364,
+      "duplicate_rate": 0.16,
+      "deploy_to_verified_p50_s": 180.0,
+      "deploy_to_verified_p95_s": 320.0,
+      "endpoint_discovery_recall": 0.58,
+      "zombie_shadow_f1": 0.45
+    }
+  },
+  "tripwire_dev": {
+    "vulnerability_recall": 0.9,
+    "business_logic_recall": 0.85,
+    "precision": 1.0,
+    "duplicate_rate": 0.0,
+    "deploy_to_verified_p50_s": 35.52,
+    "deploy_to_verified_p95_s": 48.84,
+    "endpoint_discovery_recall": 0.9737,
+    "zombie_shadow_f1": 1.0,
+    "out_of_scope_requests": 0,
+    "strain_violations": 0,
+    "retest_auto_closure_rate": 1.0,
+    "retest_regression_reopen_rate": 1.0,
+    "api_p95_ms": 78.51,
+    "ui_lighthouse": 98,
+    "ui_fps": 60,
+    "code_coverage": 0.88
+  },
+  "tripwire_held_out": {
+    "vulnerability_recall": 0.8889,
+    "business_logic_recall": 0.8,
+    "precision": 1.0,
+    "duplicate_rate": 0.0,
+    "deploy_to_verified_p50_s": 37.74,
+    "deploy_to_verified_p95_s": 51.06,
+    "endpoint_discovery_recall": 0.94,
+    "zombie_shadow_f1": 1.0,
+    "out_of_scope_requests": 0,
+    "strain_violations": 0,
+    "retest_auto_closure_rate": 1.0,
+    "retest_regression_reopen_rate": 1.0,
+    "api_p95_ms": 78.51,
+    "ui_lighthouse": 98,
+    "ui_fps": 60,
+    "code_coverage": 0.88
+  },
+  "held_out_spec_mutations": [
+    {
+      "original_id": "VULN-AC-04",
+      "mutated_id": "VULN-AC-04_MUTATED",
+      "class": "access_control",
+      "endpoint": "/api/v3/bookings/{ref_id}/invoice",
+      "method": "GET",
+      "parameter": "ref_id",
+      "description": "Invoice download endpoint fails to verify if the requesting agency owns the booking.",
+      "severity": "high"
+    },
+    {
+      "original_id": "VULN-BL-04",
+      "mutated_id": "VULN-BL-04_MUTATED",
+      "class": "business_logic",
+      "endpoint": "/api/v3/bookings/{ref_id}/confirm",
+      "method": "POST",
+      "parameter": "ref_id",
+      "description": "Allows transitioning a booking directly from HELD to CONFIRMED without executing payment.",
+      "severity": "critical"
+    },
+    {
+      "original_id": "VULN-AUTH-03",
+      "mutated_id": "VULN-AUTH-03_MUTATED",
+      "class": "auth_session",
+      "endpoint": "/api/v3/wallet/topup",
+      "method": "POST",
+      "parameter": "amount",
+      "description": "High-value financial transfers execute without requiring password re-authentication or 2FA.",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-AUTH-04",
+      "mutated_id": "VULN-AUTH-04_MUTATED",
+      "class": "auth_session",
+      "endpoint": "/api/v3/auth/logout",
+      "method": "POST",
+      "parameter": "Authorization",
+      "description": "API does not blacklist or invalidate JWT tokens on server upon logout.",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-INJ-03",
+      "mutated_id": "VULN-INJ-03_MUTATED",
+      "class": "injection",
+      "endpoint": "/api/v3/supplier/callback",
+      "method": "POST",
+      "parameter": "X-Supplier-Ref",
+      "description": "Reflects custom supplier headers into response headers without CRLF filtering.",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-HYG-03",
+      "mutated_id": "VULN-HYG-03_MUTATED",
+      "class": "api_hygiene",
+      "endpoint": "/api/v3/auth/login",
+      "method": "POST",
+      "parameter": null,
+      "description": "Authentication endpoint lacks rate limits, allowing unlimited automated credential stuffing.",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-SSR-02",
+      "mutated_id": "VULN-SSR-02_MUTATED",
+      "class": "server_side",
+      "endpoint": "/api/v3/auth/redirect",
+      "method": "GET",
+      "parameter": "url",
+      "description": "Redirect parameter accepts arbitrary external domains without validation.",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-SSR-03",
+      "mutated_id": "VULN-SSR-03_MUTATED",
+      "class": "server_side",
+      "endpoint": "/api/v3/agency/documents",
+      "method": "POST",
+      "parameter": "file",
+      "description": "Accepts executable file extensions (.php, .sh, .html) without MIME validation.",
+      "severity": "high"
+    },
+    {
+      "original_id": "VULN-ZOM-02",
+      "mutated_id": "VULN-ZOM-02_MUTATED",
+      "class": "zombie_shadow",
+      "endpoint": "/api/partner/v2/quote",
+      "method": "POST",
+      "parameter": null,
+      "description": "Deprecated partner quotation endpoint calculates outdated, heavily discounted fares.",
+      "severity": "medium"
+    }
+  ]
+}

@@ -136,5 +136,27 @@
 
 ---
 
+## Phase 9 Active Tasks
+- [x] Author comprehensive STRIDE and DREAD threat model in `docs/THREAT_MODEL.md`.
+- [x] Author Architecture Decision Records (ADRs) in `docs/adr/` (ADR 0001 through 0004).
+- [x] Implement comparative baselines in `benchmarks/baselines/` (`spray_scanner.py`, `zap_standard.py`).
+- [x] Implement automated benchmark runner in `benchmarks/run_all.py`.
+- [x] Execute benchmark suite across Dev, Held-Out, and Baselines (Overall Recall: 90% Dev, 88.9% Held-out; Precision: 100%).
+- [x] Verify code coverage >= 80% (90% achieved on 76 tests across 2,088 statements).
+- [x] Verify zero out-of-scope requests, zero rate limit / strain violations.
+- [x] Verify retest auto-closure (100%) and regression auto-reopen (100%).
+- [x] Programmatically maintain `BENCHMARKS.md` and save `benchmarks/results.json`.
+- [x] Verify Phase 9 exit gate: all metrics pass and all artifacts cryptographically validated.
+
+---
+
+## Phase 10 Active Tasks
+- [ ] Finalize production-grade `README.md` with complete documentation, architecture diagram, usage guide, and demo commands.
+- [ ] Verify animated hero banner and tagline SVG assets in `assets/`.
+- [ ] Author comprehensive `HANDOFF.md` containing runbooks, test instructions, and architecture breakdown.
+- [ ] Merge to `main`, tag `v1.0.0`, push tags, and verify final CI.
+
+---
+
 ## Failing Gates & Retries
 - None currently.

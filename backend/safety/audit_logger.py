@@ -1,5 +1,6 @@
 """Append-only, SHA-256 hash-chained audit logger with replay verification."""
 
+import contextlib
 import hashlib
 import json
 import threading
@@ -130,6 +131,19 @@ class AuditLogger:
             self._sequence += 1
             self._last_hash = entry_hash
             return entry
+
+    def get_entries(self) -> list[dict[str, Any]]:
+        """Read all logged audit entries from the active log file."""
+        entries: list[dict[str, Any]] = []
+        if not self.log_path.exists():
+            return entries
+        with open(self.log_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    with contextlib.suppress(Exception):
+                        entries.append(json.loads(line))
+        return entries
 
     @staticmethod
     def verify_chain(log_path: Path | str) -> tuple[bool, str, int]:

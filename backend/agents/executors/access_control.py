@@ -53,7 +53,7 @@ class AccessControlExecutor(BaseAttackExecutor):
         for target_url in target_urls:
             # Primary test: Attempt to access resource using Agent Alpha credentials or no auth
             primary_headers = {
-                "Authorization": "Bearer alpha-agent-token-test",
+                "Authorization": "Bearer beta-agent-token",
             }
             primary_req = {
                 "method": method,
