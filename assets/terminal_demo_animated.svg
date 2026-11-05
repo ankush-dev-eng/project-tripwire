@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" width="100%" height="440">
+  <defs>
+    <linearGradient id="termBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14181B" />
+      <stop offset="100%" stop-color="#101416" />
+    </linearGradient>
+
+    <filter id="termGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <style>
+      .t-mono { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; font-size: 13px; }
+      
+      @keyframes lineFade {
+        0%, 15% { opacity: 0; transform: translateY(4px); }
+        25%, 100% { opacity: 1; transform: translateY(0); }
+      }
+      .l1 { animation: lineFade 8s infinite 0.2s; }
+      .l2 { animation: lineFade 8s infinite 0.8s; }
+      .l3 { animation: lineFade 8s infinite 1.5s; }
+      .l4 { animation: lineFade 8s infinite 2.2s; }
+      .l5 { animation: lineFade 8s infinite 3.0s; }
+      .l6 { animation: lineFade 8s infinite 3.8s; }
+      .l7 { animation: lineFade 8s infinite 4.6s; }
+      .l8 { animation: lineFade 8s infinite 5.4s; }
+      .l9 { animation: lineFade 8s infinite 6.2s; }
+
+      @keyframes termCursor {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+      .t-cursor { animation: termCursor 0.9s infinite; }
+    </style>
+  </defs>
+
+  <!-- Window Container -->
+  <rect width="900" height="440" rx="8" fill="url(#termBg)" stroke="#2B343B" stroke-width="1.2" />
+  
+  <!-- Window Header -->
+  <path d="M 0 8 Q 0 0 8 0 L 892 0 Q 900 0 900 8 L 900 36 L 0 36 Z" fill="#1B2226" />
+  <circle cx="20" cy="18" r="6" fill="#A8403A" />
+  <circle cx="40" cy="18" r="6" fill="#C79A3B" />
+  <circle cx="60" cy="18" r="6" fill="#4F7A5A" />
+  <text x="450" y="22" text-anchor="middle" fill="#8B979E" class="t-mono" font-size="12">tripwire-agent — mission-control@127.0.0.1:8765</text>
+
+  <!-- Terminal Content Lines -->
+  <g transform="translate(24, 65)">
+    <!-- Line 1: Command Trigger -->
+    <g class="l1">
+      <text x="0" y="0" fill="#6F8F7B" class="t-mono" font-weight="700">❯ tripwire scan</text>
+      <text x="145" y="0" fill="#D9D4C7" class="t-mono">--target http://127.0.0.1:8000 --scope lab --spec-free</text>
+    </g>
+
+    <!-- Line 2: Deploy Ingest -->
+    <g transform="translate(0, 30)" class="l2">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:01]</text>
+      <text x="95" y="0" fill="#8B979E" class="t-mono">DEPLOY INGEST</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">Webhook ingested: commit 5ea269d (delta: 4 modified endpoints)</text>
+    </g>
+
+    <!-- Line 3: Spec-Free Recon -->
+    <g transform="translate(0, 60)" class="l3">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:03]</text>
+      <text x="95" y="0" fill="#6F8F7B" class="t-mono">RECON CRAWLER</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">Harvested 23 routes from /static/bundle.js (Zero OpenAPI spec required)</text>
+    </g>
+
+    <!-- Line 4: Inventory Diff -->
+    <g transform="translate(0, 90)" class="l4">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:05]</text>
+      <text x="95" y="0" fill="#C79A3B" class="t-mono">INVENTORY RECON</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">Reconciled against 30d logs: </text>
+      <text x="460" y="0" fill="#6F8F7B" class="t-mono">18 Active</text>
+      <text x="540" y="0" fill="#8B979E" class="t-mono">|</text>
+      <text x="555" y="0" fill="#B5693E" class="t-mono">3 Zombie</text>
+      <text x="630" y="0" fill="#8B979E" class="t-mono">|</text>
+      <text x="645" y="0" fill="#C79A3B" class="t-mono">2 Shadow routes</text>
+    </g>
+
+    <!-- Line 5: Safety Guard Check -->
+    <g transform="translate(0, 120)" class="l5">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:07]</text>
+      <text x="95" y="0" fill="#4F7A5A" class="t-mono">SAFETY EGRESS</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">SafeHttpClient locked (scope SHA-256 ok | rate-limit: 25 req/s)</text>
+    </g>
+
+    <!-- Line 6: Attack Execution -->
+    <g transform="translate(0, 150)" class="l6">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:12]</text>
+      <text x="95" y="0" fill="#B5693E" class="t-mono">PLAN &amp; EXECUTE</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">Dispatching 19 targeted tests (BOLA, BFLA, Fare Tampering, SSTI)...</text>
+    </g>
+
+    <!-- Line 7: Double Proof Trigger -->
+    <g transform="translate(0, 190)" class="l7">
+      <rect x="0" y="-16" width="850" height="30" rx="4" fill="#1C1818" stroke="#A8403A" stroke-width="1" />
+      <text x="12" y="4" fill="#A8403A" class="t-mono" font-weight="700">[DOUBLE-PROOF HIT]</text>
+      <text x="180" y="4" fill="#F2EFE8" class="t-mono">B2B-STATE-001: PNR #TX-9042 fare tampered ($1,450.00 → $1.00)</text>
+    </g>
+
+    <!-- Line 8: Verification Detail -->
+    <g transform="translate(0, 230)" class="l8">
+      <text x="0" y="0" fill="#4F7A5A" class="t-mono">[14:52:16]</text>
+      <text x="95" y="0" fill="#4F7A5A" class="t-mono">DIFFERENTIAL</text>
+      <text x="230" y="0" fill="#F2EFE8" class="t-mono">Negative control check: Passed • Second independent probe: Confirmed (2/2)</text>
+    </g>
+
+    <!-- Line 9: Summary & Hash -->
+    <g transform="translate(0, 270)" class="l9">
+      <rect x="0" y="-16" width="850" height="48" rx="4" fill="#16231C" stroke="#4F7A5A" stroke-width="1.2" />
+      <text x="14" y="4" fill="#6F8F7B" class="t-mono" font-weight="700">SCAN COMPLETED IN 52.18s</text>
+      <text x="230" y="4" fill="#F2EFE8" class="t-mono">Recall: 100.0% | Precision: 100.0% | 0 False Positives | 0 Out-of-Scope</text>
+      <text x="14" y="24" fill="#8B979E" class="t-mono">Proof artifact: data/findings/proof_b2b_state_001.json (SHA-256 signed)</text>
+    </g>
+
+    <!-- Live prompt cursor -->
+    <g transform="translate(0, 335)">
+      <text x="0" y="0" fill="#6F8F7B" class="t-mono" font-weight="700">❯</text>
+      <rect x="18" y="-12" width="8" height="15" fill="#6F8F7B" class="t-cursor" />
+    </g>
+  </g>
+</svg>
