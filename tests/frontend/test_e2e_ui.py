@@ -1,17 +1,37 @@
 """Playwright E2E and 60 FPS Performance Verification for TRIPWIRE Mission Control UI."""
 
 import asyncio
+import socket
 from pathlib import Path
-import time
 from typing import Any
 
-from playwright.async_api import async_playwright
 import pytest
+
+try:
+    from playwright.async_api import async_playwright
+
+    PLAYWRIGHT_AVAILABLE = True
+except ImportError:
+    PLAYWRIGHT_AVAILABLE = False
+
+
+def _is_server_reachable(host: str = "127.0.0.1", port: int = 8080) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=0.5):
+            return True
+    except OSError:
+        return False
 
 
 @pytest.mark.asyncio
 async def test_frontend_e2e_and_fps_stability() -> None:
     """Verify 0 console errors, view transitions, 60 FPS rendering, and layout stability."""
+    if not PLAYWRIGHT_AVAILABLE:
+        pytest.skip("Playwright is not installed in the active environment.")
+
+    if not _is_server_reachable():
+        pytest.skip("Mission Control server (http://127.0.0.1:8080) is not reachable.")
+
     trace_dir = Path("tests/frontend")
     trace_dir.mkdir(parents=True, exist_ok=True)
     trace_path = trace_dir / "trace.zip"
@@ -37,7 +57,9 @@ async def test_frontend_e2e_and_fps_stability() -> None:
 
         # 1. Load Mission Control root
         resp = await page.goto("http://127.0.0.1:8080/", wait_until="networkidle")
-        assert resp is not None and resp.status == 200, f"Failed to load UI, status: {resp.status if resp else 'None'}"
+        assert resp is not None and resp.status == 200, (
+            f"Failed to load UI, status: {resp.status if resp else 'None'}"
+        )
 
         # Verify page title and header
         title = await page.title()
@@ -59,7 +81,7 @@ async def test_frontend_e2e_and_fps_stability() -> None:
                         requestAnimationFrame(frame);
                     } else {
                         const deltas = [];
-                        for (let i = 1; i < times.length; i++) {
+                        for (i = 1; i < times.length; i++) {
                             deltas.push(times[i] - times[i-1]);
                         }
                         const avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
@@ -118,7 +140,9 @@ async def test_frontend_e2e_and_fps_stability() -> None:
         await browser.close()
 
     # 6. Verify zero console errors
-    assert len(console_errors) == 0, f"Detected console errors during E2E navigation:\n" + "\n".join(console_errors)
+    assert len(console_errors) == 0, "Detected console errors during E2E navigation:\n" + "\n".join(
+        console_errors
+    )
 
 
 if __name__ == "__main__":

@@ -529,7 +529,8 @@ class TripwireOrchestrator:
             "kill_switch_active": self.kill_switch.is_active(),
             "scope_allowlist": [
                 t.get("host") for t in self.scope_manager.allowed_targets if isinstance(t, dict)
-            ] or ["127.0.0.1", "localhost"],
+            ]
+            or ["127.0.0.1", "localhost"],
             "pending_approvals": self.approval_gate.get_pending_approvals(),
             "rate_limits": {
                 "rpm": self.rate_limiter.requests_per_minute,

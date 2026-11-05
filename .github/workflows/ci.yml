@@ -5,9 +5,13 @@ on:
     branches:
       - main
       - 'phase/**'
+      - 'release/**'
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
+      - 'release/**'
 
 jobs:
   test-and-lint:
