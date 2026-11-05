@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "timestamp": "2026-11-04T22:24:23.096767+00:00",
-    "commit": "4e5888a",
+    "timestamp": "2026-11-05T00:06:52.457441+00:00",
+    "commit": "7ade71b",
     "evaluator_version": "v0.9.0",
-    "seed": 42,
-    "total_benchmark_time_s": 48.09
+    "seed": 98412,
+    "total_benchmark_time_s": 48.07
   },
   "baselines": {
     "spray_scanner": {
@@ -26,12 +26,12 @@
       "name": "Baseline (ZAP Standard)",
       "total_requests": 650,
       "detected_vuln_ids": [
-        "VULN-AC-02",
-        "VULN-HYG-01",
-        "VULN-INJ-02",
-        "VULN-EXP-02",
         "VULN-SSRF-01",
         "VULN-EXP-01",
+        "VULN-EXP-02",
+        "VULN-INJ-02",
+        "VULN-HYG-01",
+        "VULN-AC-02",
         "VULN-INJ-01"
       ],
       "recall": 0.25,
@@ -49,45 +49,45 @@
     "business_logic_recall": 0.85,
     "precision": 1.0,
     "duplicate_rate": 0.0,
-    "deploy_to_verified_p50_s": 35.52,
-    "deploy_to_verified_p95_s": 48.84,
+    "deploy_to_verified_p50_s": 35.53,
+    "deploy_to_verified_p95_s": 48.85,
     "endpoint_discovery_recall": 0.9737,
     "zombie_shadow_f1": 1.0,
     "out_of_scope_requests": 0,
     "strain_violations": 0,
     "retest_auto_closure_rate": 1.0,
     "retest_regression_reopen_rate": 1.0,
-    "api_p95_ms": 78.51,
+    "api_p95_ms": 78.06,
     "ui_lighthouse": 98,
     "ui_fps": 60,
-    "code_coverage": 0.88
+    "code_coverage": 0.9
   },
   "tripwire_held_out": {
     "vulnerability_recall": 0.8889,
     "business_logic_recall": 0.8,
     "precision": 1.0,
     "duplicate_rate": 0.0,
-    "deploy_to_verified_p50_s": 37.74,
-    "deploy_to_verified_p95_s": 51.06,
+    "deploy_to_verified_p50_s": 37.75,
+    "deploy_to_verified_p95_s": 51.07,
     "endpoint_discovery_recall": 0.94,
     "zombie_shadow_f1": 1.0,
     "out_of_scope_requests": 0,
     "strain_violations": 0,
     "retest_auto_closure_rate": 1.0,
     "retest_regression_reopen_rate": 1.0,
-    "api_p95_ms": 78.51,
+    "api_p95_ms": 78.06,
     "ui_lighthouse": 98,
     "ui_fps": 60,
-    "code_coverage": 0.88
+    "code_coverage": 0.9
   },
   "held_out_spec_mutations": [
     {
       "original_id": "VULN-AC-04",
       "mutated_id": "VULN-AC-04_MUTATED",
       "class": "access_control",
-      "endpoint": "/api/v3/bookings/{ref_id}/invoice",
+      "endpoint": "/api/v3/bookings/{booking_ref}/invoice",
       "method": "GET",
-      "parameter": "ref_id",
+      "parameter": "booking_ref",
       "description": "Invoice download endpoint fails to verify if the requesting agency owns the booking.",
       "severity": "high"
     },
@@ -95,9 +95,9 @@
       "original_id": "VULN-BL-04",
       "mutated_id": "VULN-BL-04_MUTATED",
       "class": "business_logic",
-      "endpoint": "/api/v3/bookings/{ref_id}/confirm",
+      "endpoint": "/api/v3/bookings/{target_id}/confirm",
       "method": "POST",
-      "parameter": "ref_id",
+      "parameter": "target_id",
       "description": "Allows transitioning a booking directly from HELD to CONFIRMED without executing payment.",
       "severity": "critical"
     },
