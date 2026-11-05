@@ -80,3 +80,5 @@ data/audit.jsonl
 
 
 tests/frontend/videos/
+tools/
+lighthouse_report.json

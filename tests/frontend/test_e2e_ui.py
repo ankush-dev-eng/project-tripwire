@@ -2,17 +2,15 @@
 
 import asyncio
 import socket
+import subprocess
+import sys
+import time
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
 import pytest
-
-try:
-    from playwright.async_api import async_playwright
-
-    PLAYWRIGHT_AVAILABLE = True
-except ImportError:
-    PLAYWRIGHT_AVAILABLE = False
+from playwright.async_api import async_playwright
 
 
 def _is_server_reachable(host: str = "127.0.0.1", port: int = 8080) -> bool:
@@ -23,15 +21,38 @@ def _is_server_reachable(host: str = "127.0.0.1", port: int = 8080) -> bool:
         return False
 
 
+@pytest.fixture(scope="module", autouse=True)
+def ensure_server_running() -> Iterator[None]:
+    """Ensure TRIPWIRE server is live for E2E tests, launching if not already running."""
+    server_proc = None
+    if not _is_server_reachable():
+        server_proc = subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "uvicorn",
+                "backend.api.app:api_app",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8080",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        for _ in range(20):
+            time.sleep(0.5)
+            if _is_server_reachable():
+                break
+    yield
+    if server_proc:
+        server_proc.terminate()
+        server_proc.wait()
+
+
 @pytest.mark.asyncio
 async def test_frontend_e2e_and_fps_stability() -> None:
     """Verify 0 console errors, view transitions, 60 FPS rendering, and layout stability."""
-    if not PLAYWRIGHT_AVAILABLE:
-        pytest.skip("Playwright is not installed in the active environment.")
-
-    if not _is_server_reachable():
-        pytest.skip("Mission Control server (http://127.0.0.1:8080) is not reachable.")
-
     trace_dir = Path("tests/frontend")
     trace_dir.mkdir(parents=True, exist_ok=True)
     trace_path = trace_dir / "trace.zip"
@@ -81,7 +102,7 @@ async def test_frontend_e2e_and_fps_stability() -> None:
                         requestAnimationFrame(frame);
                     } else {
                         const deltas = [];
-                        for (i = 1; i < times.length; i++) {
+                        for (let i = 1; i < times.length; i++) {
                             deltas.push(times[i] - times[i-1]);
                         }
                         const avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
