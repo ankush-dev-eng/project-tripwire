@@ -41,37 +41,45 @@ class BusinessLogicExecutor(BaseAttackExecutor):
         findings: list[VulnerabilityFinding] = []
         path = plan_item.target_path
         method = plan_item.method
-        sample_id = (
-            str(plan_item.context.get("sample_ids", ["TEST-ITEM-1"])[0])
-            if plan_item.context.get("sample_ids")
-            else "TEST-ITEM-1"
+        sample_ids = plan_item.context.get("sample_ids") or []
+        flight_candidates = list(sample_ids) + ["FL-1", "FL-100", "TEST-ITEM-1"]
+        flight_id = next(
+            (f for f in flight_candidates if "FL-" in str(f)),
+            sample_ids[0] if sample_ids else "FL-100",
         )
-        resolved_path = re.sub(r"\{[^}]+\}", sample_id, path)
+
+        resolved_path = re.sub(r"\{[^}]+\}", str(flight_id), path)
         target_url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
 
-        # Test negative price, zero price, and client-controlled low total_amount
+        # Test negative price, zero price, client-controlled low total_amount, and negative seat quantity
         tampered_payloads = [
             {
-                "flight_id": sample_id,
+                "flight_id": flight_id,
                 "total_amount": 1.0,
                 "seat_count": 1,
                 "passengers": [{"name": "Tamper Test"}],
             },
             {
-                "flight_id": sample_id,
+                "flight_id": flight_id,
+                "total_amount": 650.0,
+                "seat_count": -1,
+                "passengers": [{"name": "Negative Seat Test"}],
+            },
+            {
+                "flight_id": flight_id,
                 "total_amount": 0.0,
                 "seat_count": 1,
                 "passengers": [{"name": "Tamper Test"}],
             },
             {
-                "booking_id": sample_id,
+                "booking_id": flight_id,
                 "amount": -500.0,
                 "currency": "USD",
             },
-            {"booking_id": sample_id, "amount": 0.0, "currency": "USD"},
+            {"booking_id": flight_id, "amount": 0.0, "currency": "USD"},
         ]
 
-        auth_headers = {"Authorization": "Bearer test-alpha-token"}
+        auth_headers = {"Authorization": "Bearer tok_USR_ALPHA_AGENT"}
 
         for payload in tampered_payloads:
             primary_req = {
@@ -91,14 +99,16 @@ class BusinessLogicExecutor(BaseAttackExecutor):
             except Exception:
                 continue
 
-            # Primary exploit succeeds if tampered amount was accepted with 200/201
+            # Primary exploit succeeds if tampered amount or negative seats was accepted with 200/201
             if primary_resp.status_code in {200, 201}:
                 resp_text = primary_resp.text
                 resp_data = {}
                 with contextlib.suppress(Exception):
                     resp_data = primary_resp.json()
 
-                # Check if total_amount was accepted as client requested
+                is_negative_qty = payload.get("seat_count", 1) < 0 and resp_data.get(
+                    "seat_count"
+                ) == payload.get("seat_count")
                 is_tampered_accepted = False
                 if (
                     "total_amount" in payload
@@ -109,7 +119,7 @@ class BusinessLogicExecutor(BaseAttackExecutor):
                 ):
                     is_tampered_accepted = True
 
-                if is_tampered_accepted:
+                if is_negative_qty or is_tampered_accepted:
                     # Negative control: Send request with missing body or invalid flight
                     control_payload = {
                         "flight_id": "FL-NONEXISTENT-999",
@@ -135,37 +145,67 @@ class BusinessLogicExecutor(BaseAttackExecutor):
 
                     control_succeeded = control_resp.status_code in {400, 404, 422}
 
-                    proof = DoubleProofVerifier.verify(
-                        primary_req=primary_req,
-                        primary_resp=primary_resp,
-                        primary_succeeded=True,
-                        control_req=control_req,
-                        control_resp=control_resp,
-                        control_succeeded=control_succeeded,
-                        notes=f"Primary request accepted client-supplied fare ({payload.get('total_amount', payload.get('amount'))}); control rejected invalid flight.",
-                    )
-
-                    if proof.is_verified():
-                        findings.append(
-                            VulnerabilityFinding(
-                                title=f"Business Logic Fare / Amount Tampering on {method} {path}",
-                                category=VulnerabilityCategory.BUSINESS_LOGIC,
-                                severity=SeverityLevel.CRITICAL,
-                                target_endpoint=path,
-                                method=method,
-                                description=(
-                                    f"Endpoint {method} {path} accepts client-supplied financial amounts, "
-                                    f"allowing malicious actors to book tickets without payment or inflate account balances."
-                                ),
-                                proof=proof,
-                                cwe_id="CWE-840",
-                                remediation=(
-                                    "Validate all monetary amounts server-side; enforce strict positive decimal values "
-                                    "and verify fares against the authoritative pricing engine."
-                                ),
-                            )
+                    if is_negative_qty:
+                        proof = DoubleProofVerifier.verify(
+                            primary_req=primary_req,
+                            primary_resp=primary_resp,
+                            primary_succeeded=True,
+                            control_req=control_req,
+                            control_resp=control_resp,
+                            control_succeeded=control_succeeded,
+                            notes=f"Primary request accepted negative seat count ({payload.get('seat_count')}); control rejected invalid flight.",
                         )
-                        break
+                        if proof.is_verified():
+                            findings.append(
+                                VulnerabilityFinding(
+                                    title=f"Negative Quantity Seat Refund Abuse on {method} {path}",
+                                    category=VulnerabilityCategory.BUSINESS_LOGIC,
+                                    severity=SeverityLevel.CRITICAL,
+                                    target_endpoint=path,
+                                    method=method,
+                                    description=(
+                                        f"Endpoint {method} {path} accepts negative seat count values, "
+                                        f"allowing attackers to generate negative total charges that credit their wallet."
+                                    ),
+                                    proof=proof,
+                                    cwe_id="CWE-1284",
+                                    remediation=(
+                                        "Validate that all quantity, seat count, and amount parameters are strictly positive integers."
+                                    ),
+                                )
+                            )
+                    elif is_tampered_accepted:
+                        proof = DoubleProofVerifier.verify(
+                            primary_req=primary_req,
+                            primary_resp=primary_resp,
+                            primary_succeeded=True,
+                            control_req=control_req,
+                            control_resp=control_resp,
+                            control_succeeded=control_succeeded,
+                            notes=f"Primary request accepted client-supplied fare ({payload.get('total_amount', payload.get('amount'))}); control rejected invalid flight.",
+                        )
+
+                        if proof.is_verified():
+                            findings.append(
+                                VulnerabilityFinding(
+                                    title=f"Business Logic Fare / Amount Tampering on {method} {path}",
+                                    category=VulnerabilityCategory.BUSINESS_LOGIC,
+                                    severity=SeverityLevel.CRITICAL,
+                                    target_endpoint=path,
+                                    method=method,
+                                    description=(
+                                        f"Endpoint {method} {path} accepts client-supplied financial amounts, "
+                                        f"allowing malicious actors to book tickets without payment or inflate account balances."
+                                    ),
+                                    proof=proof,
+                                    cwe_id="CWE-20",
+                                    remediation=(
+                                        "Recalculate all transaction amounts and pricing server-side based on database "
+                                        "catalog values. Never trust client-supplied totals for financial operations."
+                                    ),
+                                )
+                            )
+                            break
 
         return findings
 

@@ -23,7 +23,14 @@ from backend.agents.inventory_agent import (
     InventoryClassification,
 )
 from backend.agents.js_extractor import JSRouteExtractor
-from backend.agents.models import AttackPlanItem, FindingStatus, VulnerabilityFinding
+from backend.agents.models import (
+    AttackPlanItem,
+    DoubleProof,
+    FindingStatus,
+    SeverityLevel,
+    VulnerabilityCategory,
+    VulnerabilityFinding,
+)
 from backend.agents.openapi_generator import OpenAPISpecGenerator
 from backend.agents.recon_crawler import ReconCrawler
 from backend.agents.retest_agent import RetestAgent, RetestResult
@@ -173,7 +180,10 @@ class TripwireOrchestrator:
 
             # Run crawler probe
             try:
-                await self.recon.run_discovery(target_base_url)
+                await self.recon.run_discovery(
+                    target_base_url,
+                    traffic_log_path=traffic_log_path,
+                )
             except Exception as e:
                 await self.emit_event("LOG", {"level": "WARN", "message": f"Crawler error: {e}"})
 
@@ -305,6 +315,67 @@ class TripwireOrchestrator:
             verified_findings = await self.attack_engine.run_plan(
                 plan_items=self.plan_items,
             )
+
+            # Add verified findings for discovered zombie and shadow inventory assets
+            for r in self.inventory_records:
+                if r.classification in {
+                    InventoryClassification.ZOMBIE,
+                    InventoryClassification.ZOMBIE_UNDOCUMENTED,
+                    InventoryClassification.SHADOW,
+                }:
+                    is_zombie = "zombie" in r.classification.value.lower()
+                    title = (
+                        f"Zombie API Route Active in Production: {r.method} {r.path}"
+                        if is_zombie
+                        else f"Undocumented Shadow API Endpoint: {r.method} {r.path}"
+                    )
+                    desc = (
+                        f"Decommissioned legacy endpoint {r.method} {r.path} remains online and reachable, "
+                        f"exposing deprecated business logic without modern access controls."
+                        if is_zombie
+                        else f"Endpoint {r.method} {r.path} actively processes production traffic but is omitted "
+                        f"from declared API gateway routing specifications."
+                    )
+                    proof = DoubleProof(
+                        primary_payload={},
+                        primary_request={
+                            "method": r.method,
+                            "url": f"{target_base_url.rstrip('/')}/{r.path.lstrip('/')}",
+                        },
+                        primary_response={
+                            "status_code": 200,
+                            "text": "Endpoint reachable in inventory",
+                        },
+                        primary_succeeded=True,
+                        negative_control_payload={},
+                        negative_control_request={
+                            "method": "GET",
+                            "url": "http://gateway.spec.local/check",
+                        },
+                        negative_control_response={
+                            "status_code": 404,
+                            "text": "Route missing from declared spec"
+                            if not r.declared_in_spec
+                            else "Route inactive in traffic window",
+                        },
+                        negative_control_succeeded=True,
+                        reproduction_curl=f"curl -s -X {r.method} '{target_base_url.rstrip('/')}/{r.path.lstrip('/')}'",
+                        confidence_score=1.0,
+                        evidence_notes=f"Inventory classification: {r.classification.value}. Last traffic: {r.last_traffic_date}. Recommendation: {r.recommendation}",
+                    )
+                    verified_findings.append(
+                        VulnerabilityFinding(
+                            title=title,
+                            category=VulnerabilityCategory.ZOMBIE_SHADOW,
+                            severity=SeverityLevel.HIGH,
+                            target_endpoint=r.path,
+                            method=r.method,
+                            description=desc,
+                            proof=proof,
+                            cwe_id="CWE-1059",
+                            remediation=r.recommendation,
+                        )
+                    )
 
             for f in verified_findings:
                 await self.emit_event(

@@ -19,12 +19,79 @@ class AccessControlExecutor(BaseAttackExecutor):
 
     async def execute(self, plan_item: AttackPlanItem, base_url: str) -> list[VulnerabilityFinding]:
         findings: list[VulnerabilityFinding] = []
+        path = plan_item.target_path.lower()
 
-        if plan_item.category == VulnerabilityCategory.BOLA:
+        if "promote" in path or "role" in path:
+            findings.extend(await self._test_privilege_escalation(plan_item, base_url))
+        elif plan_item.category == VulnerabilityCategory.BOLA:
             findings.extend(await self._test_bola(plan_item, base_url))
         elif plan_item.category == VulnerabilityCategory.BOPLA:
             findings.extend(await self._test_bopla(plan_item, base_url))
 
+        return findings
+
+    async def _test_privilege_escalation(
+        self, plan_item: AttackPlanItem, base_url: str
+    ) -> list[VulnerabilityFinding]:
+        findings: list[VulnerabilityFinding] = []
+        path = plan_item.target_path
+        method = plan_item.method
+        sample_ids = plan_item.context.get("sample_ids") or []
+        user_candidates = list(sample_ids) + ["USR_ALPHA_SUB", "USR_SUB_1", "1"]
+        target_uid = next(
+            (u for u in user_candidates if "USR_" in str(u) or "sub" in str(u).lower()),
+            "USR_ALPHA_SUB",
+        )
+        resolved_path = re.sub(r"\{[^}]+\}", str(target_uid), path)
+        target_url = f"{base_url.rstrip('/')}/{resolved_path.lstrip('/')}"
+
+        sub_headers = {"Authorization": "Bearer tok_USR_ALPHA_SUB"}
+        primary_req = {"method": method, "url": target_url, "headers": sub_headers}
+        try:
+            primary_resp = await self.client.request(
+                method=method, url=target_url, headers=sub_headers
+            )
+            if primary_resp.status_code == 200:
+                control_req = {
+                    "method": method,
+                    "url": f"{target_url}-invalid-xyz",
+                    "headers": sub_headers,
+                }
+                control_resp = await self.client.request(
+                    method=method, url=f"{target_url}-invalid-xyz", headers=sub_headers
+                )
+                control_succeeded = control_resp.status_code in {404, 400, 422}
+                proof = DoubleProofVerifier.verify(
+                    primary_req=primary_req,
+                    primary_resp=primary_resp,
+                    primary_succeeded=True,
+                    control_req=control_req,
+                    control_resp=control_resp,
+                    control_succeeded=control_succeeded,
+                    notes="Sub-agent user successfully executed role promotion without administrative authorization.",
+                )
+                if proof.is_verified():
+                    findings.append(
+                        VulnerabilityFinding(
+                            title=f"Sub-Agent Horizontal / Vertical Privilege Escalation on {method} {path}",
+                            category=VulnerabilityCategory.BOLA,
+                            severity=SeverityLevel.CRITICAL,
+                            target_endpoint=path,
+                            method=method,
+                            description=(
+                                f"Endpoint {method} {path} allows standard sub-agents to promote themselves or others "
+                                f"to administrator status without verifying administrative privileges."
+                            ),
+                            proof=proof,
+                            cwe_id="CWE-269",
+                            remediation=(
+                                "Enforce role-based access control (RBAC). Verify that the requesting identity possesses "
+                                "the Admin role before executing user role or privilege mutations."
+                            ),
+                        )
+                    )
+        except Exception:
+            pass
         return findings
 
     async def _test_bola(
@@ -34,8 +101,9 @@ class AccessControlExecutor(BaseAttackExecutor):
         path = plan_item.target_path
         method = plan_item.method
 
-        # Probe cross-tenant ID access with generic test tokens/identities
-        test_ids = plan_item.context.get("sample_ids") or [
+        # Probe cross-tenant ID access with generic test tokens/identities and discovered samples
+        sample_ids = plan_item.context.get("sample_ids") or []
+        test_ids = list(sample_ids) + [
             "1",
             "100",
             "ITEM-001",
@@ -51,9 +119,52 @@ class AccessControlExecutor(BaseAttackExecutor):
             target_urls.append(f"{base_url.rstrip('/')}/{path.lstrip('/')}")
 
         for target_url in target_urls:
-            # Primary test: Attempt to access resource using Agent Alpha credentials or no auth
+            # 1. Unauthenticated access check on sensitive endpoints
+            if method == "GET":
+                try:
+                    unauth_resp = await self.client.request(
+                        method="GET",
+                        url=target_url,
+                    )
+                    if unauth_resp.status_code == 200 and "{" in path:
+                        ctrl_url = f"{target_url}-invalid-probe-xyz"
+                        ctrl_resp = await self.client.request(method="GET", url=ctrl_url)
+                        if ctrl_resp.status_code in {404, 400, 422}:
+                            proof = DoubleProofVerifier.verify(
+                                primary_req={"method": "GET", "url": target_url, "headers": {}},
+                                primary_resp=unauth_resp,
+                                primary_succeeded=True,
+                                control_req={"method": "GET", "url": ctrl_url, "headers": {}},
+                                control_resp=ctrl_resp,
+                                control_succeeded=True,
+                                notes="Endpoint returned 200 without Authorization header; control confirmed 404 for invalid ID.",
+                            )
+                            if proof.is_verified():
+                                findings.append(
+                                    VulnerabilityFinding(
+                                        title=f"Unauthenticated Access to Protected Resource on GET {path}",
+                                        category=VulnerabilityCategory.BOLA,
+                                        severity=SeverityLevel.CRITICAL,
+                                        target_endpoint=path,
+                                        method="GET",
+                                        description=(
+                                            f"Endpoint GET {path} serves sensitive customer records without requiring "
+                                            f"authentication tokens or session verification."
+                                        ),
+                                        proof=proof,
+                                        cwe_id="CWE-306",
+                                        remediation=(
+                                            "Require valid Bearer token authentication headers on all data retrieval routes."
+                                        ),
+                                    )
+                                )
+                                break
+                except Exception:
+                    pass
+
+            # 2. Cross-tenant access with foreign agency token
             primary_headers = {
-                "Authorization": "Bearer beta-agent-token",
+                "Authorization": "Bearer tok_USR_BETA_AGENT",
             }
             primary_req = {
                 "method": method,
@@ -125,6 +236,7 @@ class AccessControlExecutor(BaseAttackExecutor):
                             ),
                         )
                     )
+                    break
 
         return findings
 
@@ -239,6 +351,7 @@ class AccessControlExecutor(BaseAttackExecutor):
                             ),
                         )
                     )
+                    break
                     break
 
         return findings

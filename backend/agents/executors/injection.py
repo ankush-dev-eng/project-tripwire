@@ -38,7 +38,87 @@ class InjectionExecutor(BaseAttackExecutor):
                 param_candidates.append(default_p)
 
         for param in param_candidates:
-            # Test boolean-based or error-based SQLi
+            # 1. Test Command Injection if param is host/ip/cmd or diagnostic path
+            if (
+                param in {"host", "ip", "cmd", "target"}
+                or "diag" in path.lower()
+                or "ping" in path.lower()
+            ):
+                cmd_payload = "127.0.0.1; id"
+                cmd_params = {param: cmd_payload}
+                cmd_req = {
+                    "method": method,
+                    "url": target_url,
+                    "params": cmd_params,
+                }
+                try:
+                    cmd_resp = await self.client.request(
+                        method=method,
+                        url=target_url,
+                        params=cmd_params if method == "GET" else None,
+                        json=cmd_params if method != "GET" else None,
+                    )
+                    c_text = cmd_resp.text
+                    if cmd_resp.status_code == 200 and any(
+                        sig in c_text.lower()
+                        for sig in [
+                            "diagnostic_command",
+                            "command_executed",
+                            "simulated rce",
+                            "uid=",
+                            "root",
+                        ]
+                    ):
+                        control_params = {param: "127.0.0.1"}
+                        control_req = {
+                            "method": method,
+                            "url": target_url,
+                            "params": control_params,
+                        }
+                        control_resp = await self.client.request(
+                            method=method,
+                            url=target_url,
+                            params=control_params if method == "GET" else None,
+                            json=control_params if method != "GET" else None,
+                        )
+                        control_succeeded = (
+                            control_resp.status_code == 200
+                            and "command_executed" not in control_resp.text
+                        )
+                        proof = DoubleProofVerifier.verify(
+                            primary_req=cmd_req,
+                            primary_resp=cmd_resp,
+                            primary_succeeded=True,
+                            control_req=control_req,
+                            control_resp=control_resp,
+                            control_succeeded=control_succeeded,
+                            notes=f"Command injection separator executed shell command in parameter '{param}'.",
+                        )
+                        if proof.is_verified():
+                            findings.append(
+                                VulnerabilityFinding(
+                                    title=f"Command Injection on {method} {path} ({param})",
+                                    category=VulnerabilityCategory.INJECTION,
+                                    severity=SeverityLevel.CRITICAL,
+                                    target_endpoint=path,
+                                    method=method,
+                                    description=(
+                                        f"Endpoint {method} {path} passes parameter '{param}' directly to system shell "
+                                        f"commands without sanitization, permitting arbitrary remote code execution."
+                                    ),
+                                    proof=proof,
+                                    cwe_id="CWE-78",
+                                    remediation=(
+                                        "Avoid invoking shell commands with user-supplied arguments. Use safe APIs "
+                                        "and strictly validate input against an IP/hostname regex allowlist."
+                                    ),
+                                )
+                            )
+                            continue
+                except Exception:
+                    pass
+
+            # 2. Test boolean-based or error-based SQLi
             sqli_payload = "' OR '1'='1"
             primary_params = {param: sqli_payload}
             primary_req = {

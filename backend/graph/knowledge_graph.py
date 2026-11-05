@@ -186,6 +186,12 @@ class KnowledgeGraph:
 
     get_endpoint_parameters = get_parameters_for_endpoint
 
+    def get_all_parameters(self) -> list[dict[str, Any]]:
+        """Retrieve all parameter nodes in the knowledge graph."""
+        return [
+            data for _, data in self.graph.nodes(data=True) if data.get("node_type") == "parameter"
+        ]
+
     def export_topology_for_ui(self) -> dict[str, Any]:
         """Export graph formatted for React Flow visualization (nodes & edges)."""
         nodes = []

@@ -32,6 +32,11 @@ class AttackPlanner:
             observed_samples = []
             for p in params:
                 observed_samples.extend(p.get("observed_values", []))
+            if not observed_samples:
+                for p in self.kg.get_all_parameters():
+                    observed_samples.extend(p.get("observed_values", []))
+            # Deduplicate while preserving order
+            observed_samples = list(dict.fromkeys(observed_samples))
             path_lower = path.lower()
 
             base_context = {
@@ -41,10 +46,10 @@ class AttackPlanner:
             }
 
             # 1. BOLA / IDOR Planning
-            # Target endpoints with identifier parameters in path or query
+            # Target endpoints with identifier parameters in path or query, or role promotion
             has_id_param = any(
                 re.search(
-                    r"(id|booking|user|invoice|wallet|agency|pnr|order)",
+                    r"(id|booking|user|invoice|wallet|agency|pnr|order|ref)",
                     p,
                     re.IGNORECASE,
                 )
@@ -52,13 +57,13 @@ class AttackPlanner:
             )
             has_id_in_path = "{" in path or any(
                 re.search(
-                    r"(id|booking|user|invoice|wallet|agency)",
+                    r"(id|booking|user|invoice|wallet|agency|order)",
                     segment,
                     re.IGNORECASE,
                 )
                 for segment in path.split("/")
             )
-            if has_id_param or has_id_in_path:
+            if has_id_param or has_id_in_path or "promote" in path_lower or "role" in path_lower:
                 plan.append(
                     AttackPlanItem(
                         plan_id=str(uuid.uuid4()),
@@ -156,16 +161,21 @@ class AttackPlanner:
                 )
 
             # 5. Injection (SQLi & Command Injection) Planning
-            # Target search, query, filter, sort parameters
+            # Target search, query, filter, sort parameters, or diagnostic command tools
             has_search_param = any(
                 re.search(
-                    r"(search|query|q|filter|origin|dest|sort|sql|cmd|exec)",
+                    r"(search|query|q|filter|origin|dest|sort|sql|cmd|exec|host|ip|target|diagnostic)",
                     p,
                     re.IGNORECASE,
                 )
                 for p in param_names
             )
-            if has_search_param or "search" in path_lower:
+            if (
+                has_search_param
+                or "search" in path_lower
+                or "diag" in path_lower
+                or "ping" in path_lower
+            ):
                 plan.append(
                     AttackPlanItem(
                         plan_id=str(uuid.uuid4()),

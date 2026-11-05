@@ -26,7 +26,68 @@ class AuthSessionExecutor(BaseAttackExecutor):
         method = plan_item.method
         target_url = f"{base_url.rstrip('/')}/{path.lstrip('/')}"
 
-        # 1. JWT 'none' Algorithm Test
+        # 1. Predictable / Leaked Password Reset Token
+        if "reset" in path.lower() or "password" in path.lower():
+            test_email = "agent@alpha.com"
+            primary_req = {
+                "method": "POST",
+                "url": target_url,
+                "json": {"email": test_email},
+            }
+            try:
+                primary_resp = await self.client.request(
+                    method="POST",
+                    url=target_url,
+                    json={"email": test_email},
+                )
+                if primary_resp.status_code == 200:
+                    resp_json = primary_resp.json()
+                    token_val = resp_json.get("reset_token")
+                    if token_val:
+                        control_req = {
+                            "method": "POST",
+                            "url": target_url,
+                            "json": {"email": "invalid-not-an-email"},
+                        }
+                        control_resp = await self.client.request(
+                            method="POST",
+                            url=target_url,
+                            json={"email": "invalid-not-an-email"},
+                        )
+                        control_succeeded = control_resp.status_code in {200, 400, 422}
+                        proof = DoubleProofVerifier.verify(
+                            primary_req=primary_req,
+                            primary_resp=primary_resp,
+                            primary_succeeded=True,
+                            control_req=control_req,
+                            control_resp=control_resp,
+                            control_succeeded=control_succeeded,
+                            notes="Password reset endpoint exposes predictable/leaked reset_token directly in JSON response.",
+                        )
+                        if proof.is_verified():
+                            findings.append(
+                                VulnerabilityFinding(
+                                    title=f"Predictable / Leaked Password Reset Token on POST {path}",
+                                    category=VulnerabilityCategory.AUTH_SESSION,
+                                    severity=SeverityLevel.HIGH,
+                                    target_endpoint=path,
+                                    method="POST",
+                                    description=(
+                                        f"Endpoint POST {path} returns password reset tokens directly in API responses "
+                                        f"or generates them using predictable timestamp hashes, allowing unauthenticated account takeover."
+                                    ),
+                                    proof=proof,
+                                    cwe_id="CWE-330",
+                                    remediation=(
+                                        "Generate cryptographically secure random tokens using secrets.token_urlsafe(). "
+                                        "Deliver reset tokens exclusively via out-of-band email channels, never in the HTTP response."
+                                    ),
+                                )
+                            )
+            except Exception:
+                pass
+
+        # 2. JWT 'none' Algorithm Test
         # Forge unsigned tokens: both standard JWT alg:none and none_alg token formats
         jwt_header = {"alg": "none", "typ": "JWT"}
         jwt_payload = {
