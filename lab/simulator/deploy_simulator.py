@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import random
 from typing import Any
+
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 
 from lab.vulnerabilities import get_vulnerabilities
 
@@ -145,3 +149,169 @@ class DeploySimulator:
             )
 
         return mutated_catalog
+
+    def create_mutated_app(self, spec: list[dict[str, Any]]) -> FastAPI:
+        """Create an autonomous, spec-free FastAPI target application for held-out evaluation.
+
+        Key requirements:
+        - openapi_url=None, docs_url=None, redoc_url=None (no spec exposed to agent).
+        - Serves /static/bundle.js containing the client application routes.
+        - Mounts routes exhibiting the sampled vulnerability behaviors.
+        """
+        mutated_app = FastAPI(
+            title=f"Voyager Mutated Held-Out Target (Seed {self.seed})",
+            openapi_url=None,
+            docs_url=None,
+            redoc_url=None,
+        )
+
+        routes_list: list[str] = []
+        for item in spec:
+            routes_list.append(item["endpoint"])
+            if item.get("route_alias"):
+                routes_list.append(item["route_alias"])
+
+        clean_routes = sorted(list(dict.fromkeys(routes_list)))
+
+        # Frontend JS bundle serving route catalog
+        bundle_js = (
+            "// Client Application JavaScript Bundle\n"
+            "const APP_CONFIG = {\n"
+            f"  build: 'mutated-seed-{self.seed}',\n"
+            f"  routes: {json.dumps(clean_routes)},\n"
+            "};\n"
+            "window.__APP_ROUTES__ = APP_CONFIG.routes;\n"
+        )
+
+        @mutated_app.get("/static/bundle.js")
+        async def get_bundle() -> PlainTextResponse:
+            return PlainTextResponse(bundle_js, media_type="application/javascript")
+
+        # Handlers for specific vulnerabilities
+        async def handle_invoice(request: Request) -> Response:
+            val = next(iter(request.path_params.values()), "1")
+            if "nonexistent" in val or "invalid" in val:
+                return JSONResponse({"detail": "Invoice not found"}, status_code=404)
+            return JSONResponse({
+                "invoice_id": "INV-HELD-001",
+                "booking_id": val,
+                "agency_id": "AGY-BETA",
+                "customer": "Corporate Travel Corp",
+                "amount": 450.0,
+                "card_number": "4111-2222-3333-4444",
+                "cvv": "123",
+                "paid": True,
+            })
+
+        async def handle_confirm(request: Request) -> Response:
+            val = next(iter(request.path_params.values()), "1")
+            if "nonexistent" in val or "invalid" in val:
+                return JSONResponse({"detail": "Booking not found"}, status_code=404)
+            return JSONResponse({
+                "status": "CONFIRMED",
+                "booking_id": val,
+                "payment_status": "SKIPPED_UNPAID",
+                "message": "Booking confirmed without prior payment execution",
+            })
+
+        async def handle_topup(request: Request) -> Response:
+            try:
+                body = await request.json()
+            except Exception:
+                body = {}
+            if not body:
+                return JSONResponse({"detail": "Missing topup amount"}, status_code=422)
+            return JSONResponse({
+                "status": "SUCCESS",
+                "amount": body.get("amount", 10000.0),
+                "new_balance": 50000.0,
+                "step_up_verified": False,
+            })
+
+        async def handle_logout(request: Request) -> Response:
+            return JSONResponse({"status": "SUCCESS", "message": "Logged out successfully"})
+
+        async def handle_callback(request: Request) -> Response:
+            hdr = request.headers.get("X-Supplier-Ref", "")
+            resp = JSONResponse({"status": "RECEIVED", "supplier_ack": True})
+            if hdr:
+                resp.headers["X-Supplier-Ref"] = hdr
+            return resp
+
+        async def handle_login(request: Request) -> Response:
+            return JSONResponse({
+                "access_token": "tok_held_out_login",
+                "token_type": "bearer",
+                "status": "AUTHENTICATED",
+            })
+
+        async def handle_redirect(request: Request) -> Response:
+            dest = (
+                request.query_params.get("url")
+                or request.query_params.get("target_url")
+                or request.query_params.get("redirect_url")
+            )
+            if not dest:
+                try:
+                    body = await request.json()
+                    dest = (
+                        body.get("url")
+                        or body.get("target_url")
+                        or body.get("redirect_url")
+                    )
+                except Exception:
+                    pass
+            if dest:
+                return RedirectResponse(url=dest, status_code=302)
+            return JSONResponse({"detail": "Missing destination URL"}, status_code=422)
+
+        async def handle_documents(request: Request) -> Response:
+            return JSONResponse({
+                "status": "UPLOADED",
+                "filename": "uploaded_document.php",
+                "url": "/uploads/uploaded_document.php",
+            })
+
+        async def handle_quote(request: Request) -> Response:
+            return JSONResponse({
+                "quote_id": "Q-LEGACY-PARTNER",
+                "fare": 80.0,
+                "discount": 0.45,
+                "version": "v2-legacy",
+            })
+
+        async def handle_generic(request: Request) -> Response:
+            return JSONResponse({"status": "OK", "endpoint": str(request.url.path)})
+
+        handler_map = {
+            "VULN-AC-04": handle_invoice,
+            "VULN-BL-04": handle_confirm,
+            "VULN-AUTH-03": handle_topup,
+            "VULN-AUTH-04": handle_logout,
+            "VULN-INJ-03": handle_callback,
+            "VULN-HYG-03": handle_login,
+            "VULN-SSR-02": handle_redirect,
+            "VULN-SSR-03": handle_documents,
+            "VULN-ZOM-02": handle_quote,
+        }
+
+        registered_paths: set[str] = set()
+
+        for item in spec:
+            orig_id = item["original_id"]
+            handler = handler_map.get(orig_id, handle_generic)
+
+            targets = [item["endpoint"]]
+            if item.get("route_alias"):
+                targets.append(item["route_alias"])
+
+            for t in targets:
+                if t not in registered_paths:
+                    mutated_app.add_api_route(
+                        t,
+                        handler,
+                        methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+                    )
+                    registered_paths.add(t)
+
+        return mutated_app
