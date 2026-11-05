@@ -1,18 +1,30 @@
 <div align="center">
 
+<img src="https://capsule-render.vercel.app/api?type=waving&color=4F7A5A&height=125&section=header&text=PROJECT%20TRIPWIRE&fontSize=38&fontColor=F2EFE8&fontAlignY=45&desc=AGENTIC%20REAL-TIME%20DAST%20FOR%20B2B%20TRAVEL%20PLATFORMS&descAlignY=70&descSize=14&animation=fadeIn" width="100%"/>
+
+<br/>
+
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=2200&pause=800&color=6F8F7B&center=true&vCenter=true&width=620&lines=WATCHING+B2B+ENDPOINTS;DIFFERENTIAL+DOUBLE+PROOFS;ZERO+FALSE+POSITIVES;AUTONOMOUS+CHANGE+DETECTION;CONTINUOUS+AUTO+RETEST)](https://git.io/typing-svg)
+
+<br/>
+
+[![CI](https://img.shields.io/badge/CI-PASSING-4F7A5A?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=17171B)](https://github.com/ankush-dev-eng/project-tripwire/actions)
+[![Python](https://img.shields.io/badge/PYTHON-3.12%20%7C%203.14-3776AB?style=for-the-badge&logo=python&logoColor=white&labelColor=17171B)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FASTAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=17171B)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/REACT-UI-61DAFB?style=for-the-badge&logo=react&logoColor=white&labelColor=17171B)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TYPESCRIPT-TS-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=17171B)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/TAILWIND-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white&labelColor=17171B)](https://tailwindcss.com/)
+
+<br/>
+
+[![License](https://img.shields.io/badge/LICENSE-APACHE--2.0-6F8F7B?style=for-the-badge&logo=apache&logoColor=white&labelColor=17171B)](LICENSE)
+[![Scope Lock](https://img.shields.io/badge/SAFETY-SCOPE--LOCKED-4F7A5A?style=for-the-badge&logo=security&logoColor=white&labelColor=17171B)](scope.yaml)
+[![Release](https://img.shields.io/badge/RELEASE-v1.1.0-C79A3B?style=for-the-badge&logo=git&logoColor=white&labelColor=17171B)](https://github.com/ankush-dev-eng/project-tripwire/releases/tag/v1.1.0)
+[![TBO Hackathon](https://img.shields.io/badge/HACKATHON-TBO%20SECURITY%202026-6F8F7B?style=for-the-badge&logoColor=white&labelColor=17171B)](#)
+
+<br/><br/>
+
 ![PROJECT TRIPWIRE Banner](assets/hero_banner.svg)
-
-<br/>
-
-![Tagline](assets/tagline.svg)
-
-<br/>
-
-[![CI](https://github.com/ankush-dev-eng/project-tripwire/actions/workflows/ci.yml/badge.svg)](https://github.com/ankush-dev-eng/project-tripwire/actions)
-[![License](https://img.shields.io/badge/license-Apache--2.0-6F8F7B.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.12%20%7C%203.14-1D2327.svg)](https://www.python.org/)
-[![Scope Lock](https://img.shields.io/badge/safety-scope--locked-4F7A5A.svg)](scope.yaml)
-[![Status](https://img.shields.io/badge/release-v1.1.0-6F8F7B.svg)](https://github.com/ankush-dev-eng/project-tripwire/releases/tag/v1.1.0)
 
 </div>
 
@@ -284,3 +296,31 @@ python -m ruff format --check .
 ## 11. Responsible Use & Disclosure
 
 TRIPWIRE is designed solely for authorized dynamic security testing of applications within pre-approved scopes. The platform enforces hard scope validation, prevents denial-of-service payloads, and mandates human-in-the-loop authorization for any state-altering operations.
+
+<br/>
+
+---
+
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=4F7A5A&height=3" width="100%"/>
+
+<br/><br/>
+
+# PROJECT TRIPWIRE
+
+**AGENTIC REAL-TIME DAST FOR B2B TRAVEL PLATFORMS**
+
+<br/>
+
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=2200&pause=800&color=6F8F7B&center=true&vCenter=true&width=620&lines=WATCHING+B2B+ENDPOINTS;DIFFERENTIAL+DOUBLE+PROOFS;ZERO+FALSE+POSITIVES;AUTONOMOUS+CHANGE+DETECTION;CONTINUOUS+AUTO+RETEST)](https://git.io/typing-svg)
+
+<br/>
+
+**PROOF OR SILENCE.**
+
+<br/>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=4F7A5A&height=100&section=footer" width="100%"/>
+
+</div>
