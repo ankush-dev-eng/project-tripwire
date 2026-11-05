@@ -1,10 +1,17 @@
 {
   "metadata": {
-    "timestamp": "2026-11-05T00:06:52.457441+00:00",
-    "commit": "7ade71b",
-    "evaluator_version": "v0.9.0",
+    "timestamp": "2026-11-05T02:01:13.661946+00:00",
+    "commit": "7e5d845",
+    "evaluator_version": "v1.0.2",
     "seed": 98412,
-    "total_benchmark_time_s": 48.07
+    "seeds_evaluated": [
+      101,
+      202,
+      303,
+      404,
+      505
+    ],
+    "total_benchmark_time_s": 82.24
   },
   "baselines": {
     "spray_scanner": {
@@ -23,153 +30,291 @@
       "zombie_shadow_f1": 0.2
     },
     "zap_standard": {
-      "name": "Baseline (ZAP Standard)",
-      "total_requests": 650,
+      "name": "Baseline (OWASP ZAP 2.17.0 - Measured)",
+      "version": "2.17.0",
+      "total_requests": 68,
       "detected_vuln_ids": [
-        "VULN-SSRF-01",
-        "VULN-EXP-01",
-        "VULN-EXP-02",
-        "VULN-INJ-02",
-        "VULN-HYG-01",
-        "VULN-AC-02",
-        "VULN-INJ-01"
+        "VULN-SSR-02"
       ],
-      "recall": 0.25,
-      "business_logic_recall": 0.1111,
-      "precision": 0.6364,
-      "duplicate_rate": 0.16,
-      "deploy_to_verified_p50_s": 180.0,
-      "deploy_to_verified_p95_s": 320.0,
-      "endpoint_discovery_recall": 0.58,
-      "zombie_shadow_f1": 0.45
+      "recall": 0.0357,
+      "business_logic_recall": 0.0,
+      "precision": 0.3333,
+      "duplicate_rate": 0.0,
+      "deploy_to_verified_p50_s": 18.5,
+      "deploy_to_verified_p95_s": 35.2,
+      "scan_time_s": 37.0,
+      "endpoint_discovery_recall": 1.0,
+      "zombie_shadow_f1": 0.0
     }
   },
   "tripwire_dev": {
-    "vulnerability_recall": 0.9,
-    "business_logic_recall": 0.85,
+    "vulnerability_recall": 0.4737,
+    "business_logic_recall": 0.4286,
     "precision": 1.0,
     "duplicate_rate": 0.0,
-    "deploy_to_verified_p50_s": 35.53,
-    "deploy_to_verified_p95_s": 48.85,
+    "deploy_to_verified_p50_s": 25.52,
+    "deploy_to_verified_p95_s": 42.79,
     "endpoint_discovery_recall": 0.9737,
     "zombie_shadow_f1": 1.0,
     "out_of_scope_requests": 0,
     "strain_violations": 0,
     "retest_auto_closure_rate": 1.0,
     "retest_regression_reopen_rate": 1.0,
-    "api_p95_ms": 78.06,
-    "ui_lighthouse": 98,
+    "api_p95_ms": 77.5,
+    "ui_lighthouse": 99,
     "ui_fps": 60,
     "code_coverage": 0.9
   },
   "tripwire_held_out": {
-    "vulnerability_recall": 0.8889,
-    "business_logic_recall": 0.8,
+    "vulnerability_recall": 0.55,
+    "vulnerability_recall_spread": {
+      "min": 0.5,
+      "max": 0.625
+    },
+    "business_logic_recall": 1.0,
+    "business_logic_recall_spread": {
+      "min": 1.0,
+      "max": 1.0
+    },
     "precision": 1.0,
     "duplicate_rate": 0.0,
-    "deploy_to_verified_p50_s": 37.75,
-    "deploy_to_verified_p95_s": 51.07,
-    "endpoint_discovery_recall": 0.94,
+    "deploy_to_verified_p50_s": 3.54,
+    "deploy_to_verified_p95_s": 6.72,
+    "endpoint_discovery_recall": 1.0,
     "zombie_shadow_f1": 1.0,
     "out_of_scope_requests": 0,
     "strain_violations": 0,
     "retest_auto_closure_rate": 1.0,
     "retest_regression_reopen_rate": 1.0,
-    "api_p95_ms": 78.06,
-    "ui_lighthouse": 98,
+    "api_p95_ms": 77.5,
+    "ui_lighthouse": 99,
     "ui_fps": 60,
-    "code_coverage": 0.9
+    "code_coverage": 0.9,
+    "seed_runs": [
+      {
+        "seed": 101,
+        "recall": 0.5,
+        "business_logic_recall": 1.0,
+        "precision": 1.0,
+        "duplicate_rate": 0.0,
+        "findings_count": 5,
+        "spec_size": 8,
+        "elapsed_s": 6.74,
+        "p50_s": 3.37,
+        "p95_s": 6.4
+      },
+      {
+        "seed": 202,
+        "recall": 0.5,
+        "business_logic_recall": 1.0,
+        "precision": 1.0,
+        "duplicate_rate": 0.0,
+        "findings_count": 5,
+        "spec_size": 8,
+        "elapsed_s": 6.68,
+        "p50_s": 3.34,
+        "p95_s": 6.35
+      },
+      {
+        "seed": 303,
+        "recall": 0.5,
+        "business_logic_recall": 1.0,
+        "precision": 1.0,
+        "duplicate_rate": 0.0,
+        "findings_count": 5,
+        "spec_size": 8,
+        "elapsed_s": 8.28,
+        "p50_s": 4.14,
+        "p95_s": 7.86
+      },
+      {
+        "seed": 404,
+        "recall": 0.625,
+        "business_logic_recall": 1.0,
+        "precision": 1.0,
+        "duplicate_rate": 0.0,
+        "findings_count": 6,
+        "spec_size": 8,
+        "elapsed_s": 6.81,
+        "p50_s": 3.4,
+        "p95_s": 6.47
+      },
+      {
+        "seed": 505,
+        "recall": 0.625,
+        "business_logic_recall": 1.0,
+        "precision": 1.0,
+        "duplicate_rate": 0.0,
+        "findings_count": 6,
+        "spec_size": 8,
+        "elapsed_s": 6.88,
+        "p50_s": 3.44,
+        "p95_s": 6.54
+      }
+    ]
   },
   "held_out_spec_mutations": [
     {
-      "original_id": "VULN-AC-04",
-      "mutated_id": "VULN-AC-04_MUTATED",
-      "class": "access_control",
-      "endpoint": "/api/v3/bookings/{booking_ref}/invoice",
-      "method": "GET",
-      "parameter": "booking_ref",
-      "description": "Invoice download endpoint fails to verify if the requesting agency owns the booking.",
-      "severity": "high"
-    },
-    {
-      "original_id": "VULN-BL-04",
-      "mutated_id": "VULN-BL-04_MUTATED",
-      "class": "business_logic",
-      "endpoint": "/api/v3/bookings/{target_id}/confirm",
-      "method": "POST",
-      "parameter": "target_id",
-      "description": "Allows transitioning a booking directly from HELD to CONFIRMED without executing payment.",
-      "severity": "critical"
-    },
-    {
       "original_id": "VULN-AUTH-03",
-      "mutated_id": "VULN-AUTH-03_MUTATED",
+      "mutated_id": "VULN-AUTH-03_M412",
       "class": "auth_session",
       "endpoint": "/api/v3/wallet/topup",
+      "route_alias": "/api/v4/preview/wallet/topup",
       "method": "POST",
-      "parameter": "amount",
-      "description": "High-value financial transfers execute without requiring password re-authentication or 2FA.",
+      "parameter": "transfer_amount",
+      "flow": {
+        "flow_id": "FLOW-837",
+        "flow_name": "identity_lifecycle_flow",
+        "step": 1,
+        "dependencies": [
+          "/api/v3/auth/login"
+        ],
+        "transactional": false,
+        "requires_auth": true
+      },
+      "description": "High-value financial transfers execute without requiring password re-authentication or 2FA. [Variant M412]",
       "severity": "medium"
     },
     {
       "original_id": "VULN-AUTH-04",
-      "mutated_id": "VULN-AUTH-04_MUTATED",
+      "mutated_id": "VULN-AUTH-04_M412",
       "class": "auth_session",
       "endpoint": "/api/v3/auth/logout",
+      "route_alias": "/api/v3/auth/logout",
       "method": "POST",
-      "parameter": "Authorization",
-      "description": "API does not blacklist or invalidate JWT tokens on server upon logout.",
+      "parameter": "X-Auth-Token",
+      "flow": {
+        "flow_id": "FLOW-324",
+        "flow_name": "identity_lifecycle_flow",
+        "step": 2,
+        "dependencies": [
+          "/api/v3/auth/login"
+        ],
+        "transactional": false,
+        "requires_auth": true
+      },
+      "description": "API does not blacklist or invalidate JWT tokens on server upon logout. [Variant M412]",
       "severity": "medium"
     },
     {
-      "original_id": "VULN-INJ-03",
-      "mutated_id": "VULN-INJ-03_MUTATED",
-      "class": "injection",
-      "endpoint": "/api/v3/supplier/callback",
+      "original_id": "VULN-BL-04",
+      "mutated_id": "VULN-BL-04_M412",
+      "class": "business_logic",
+      "endpoint": "/api/v3/bookings/{booking_ref}/confirm",
+      "route_alias": "/api/v3.1/bookings/{booking_ref}/confirm",
       "method": "POST",
-      "parameter": "X-Supplier-Ref",
-      "description": "Reflects custom supplier headers into response headers without CRLF filtering.",
-      "severity": "medium"
+      "parameter": "booking_ref",
+      "flow": {
+        "flow_id": "FLOW-823",
+        "flow_name": "booking_state_commit_flow",
+        "step": 3,
+        "dependencies": [
+          "/api/v3/bookings/hold"
+        ],
+        "transactional": true,
+        "requires_auth": true
+      },
+      "description": "Allows transitioning a booking directly from HELD to CONFIRMED without executing payment. [Variant M412]",
+      "severity": "critical"
     },
     {
       "original_id": "VULN-HYG-03",
-      "mutated_id": "VULN-HYG-03_MUTATED",
+      "mutated_id": "VULN-HYG-03_M412",
       "class": "api_hygiene",
       "endpoint": "/api/v3/auth/login",
+      "route_alias": "/api/v4/preview/auth/login",
       "method": "POST",
       "parameter": null,
-      "description": "Authentication endpoint lacks rate limits, allowing unlimited automated credential stuffing.",
+      "flow": {
+        "flow_id": "FLOW-518",
+        "flow_name": "client_session_negotiation_flow",
+        "step": 4,
+        "dependencies": [],
+        "transactional": false,
+        "requires_auth": false
+      },
+      "description": "Authentication endpoint lacks rate limits, allowing unlimited automated credential stuffing. [Variant M412]",
       "severity": "medium"
     },
     {
       "original_id": "VULN-SSR-02",
-      "mutated_id": "VULN-SSR-02_MUTATED",
+      "mutated_id": "VULN-SSR-02_M412",
       "class": "server_side",
       "endpoint": "/api/v3/auth/redirect",
+      "route_alias": "/api/v3/auth/redirect",
       "method": "GET",
-      "parameter": "url",
-      "description": "Redirect parameter accepts arbitrary external domains without validation.",
+      "parameter": "redirect_url",
+      "flow": {
+        "flow_id": "FLOW-558",
+        "flow_name": "external_partner_redirection_flow",
+        "step": 5,
+        "dependencies": [],
+        "transactional": false,
+        "requires_auth": false
+      },
+      "description": "Redirect parameter accepts arbitrary external domains without validation. [Variant M412]",
+      "severity": "medium"
+    },
+    {
+      "original_id": "VULN-INJ-03",
+      "mutated_id": "VULN-INJ-03_M412",
+      "class": "injection",
+      "endpoint": "/api/v3/supplier/callback",
+      "route_alias": "/api/v3/supplier/callback",
+      "method": "POST",
+      "parameter": "X-Partner-Id",
+      "flow": {
+        "flow_id": "FLOW-603",
+        "flow_name": "supplier_integration_flow",
+        "step": 6,
+        "dependencies": [
+          "/internal/supplier-sync"
+        ],
+        "transactional": true,
+        "requires_auth": true
+      },
+      "description": "Reflects custom supplier headers into response headers without CRLF filtering. [Variant M412]",
       "severity": "medium"
     },
     {
       "original_id": "VULN-SSR-03",
-      "mutated_id": "VULN-SSR-03_MUTATED",
+      "mutated_id": "VULN-SSR-03_M412",
       "class": "server_side",
       "endpoint": "/api/v3/agency/documents",
+      "route_alias": "/api/v3/agency/documents",
       "method": "POST",
-      "parameter": "file",
-      "description": "Accepts executable file extensions (.php, .sh, .html) without MIME validation.",
+      "parameter": "upload_file",
+      "flow": {
+        "flow_id": "FLOW-377",
+        "flow_name": "external_partner_redirection_flow",
+        "step": 7,
+        "dependencies": [],
+        "transactional": false,
+        "requires_auth": true
+      },
+      "description": "Accepts executable file extensions (.php, .sh, .html) without MIME validation. [Variant M412]",
       "severity": "high"
     },
     {
-      "original_id": "VULN-ZOM-02",
-      "mutated_id": "VULN-ZOM-02_MUTATED",
-      "class": "zombie_shadow",
-      "endpoint": "/api/partner/v2/quote",
-      "method": "POST",
-      "parameter": null,
-      "description": "Deprecated partner quotation endpoint calculates outdated, heavily discounted fares.",
-      "severity": "medium"
+      "original_id": "VULN-AC-04",
+      "mutated_id": "VULN-AC-04_M412",
+      "class": "access_control",
+      "endpoint": "/api/v3/bookings/{target_id}/invoice",
+      "route_alias": "/api/v3.1/bookings/{target_id}/invoice",
+      "method": "GET",
+      "parameter": "target_id",
+      "flow": {
+        "flow_id": "FLOW-544",
+        "flow_name": "checkout_invoicing_flow",
+        "step": 8,
+        "dependencies": [
+          "/api/v3/auth/login"
+        ],
+        "transactional": true,
+        "requires_auth": true
+      },
+      "description": "Invoice download endpoint fails to verify if the requesting agency owns the booking. [Variant M412]",
+      "severity": "high"
     }
   ]
 }
