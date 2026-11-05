@@ -1,11 +1,11 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 10 Post-Release Audit & v1.0.1 Release
-- **Current Branch**: `release/v1.0.1`
+- **Current Phase**: Phase 10.2 Empirical Benchmarks, Real ZAP & v1.0.2 Release
+- **Current Branch**: `release/v1.0.2`
 - **Last Updated**: 2026-11-05
 - **Status**: PASSED
-- **Iteration Count**: 1
+- **Iteration Count**: 2
 
 ---
 
@@ -25,6 +25,7 @@
 | **9** | Hardening, Threat Model, Benchmarking | **PASSED** | Test coverage >= 80%; BENCHMARKS.md honest |
 | **10** | README Polish, Animations, v1.0.0 Tag, HANDOFF.md | **PASSED** | All benchmarks verified; v1.0.0 tagged |
 | **10.1** | Section 10 Honesty Audit & v1.0.1 Release | **PASSED** | Fresh seed, simulated baseline labels, E2E trace, 0 regressions |
+| **10.2** | Empirical Benchmark & OWASP ZAP v1.0.2 Release | **PASSED** | Multi-seed held-out, measured ZAP 2.17.0, real percentiles, CI Playwright |
 
 ---
 
@@ -170,6 +171,19 @@
 - [x] Run benchmark suite on fresh, uninspected seed `98412`; report metrics as-is in `benchmarks/results.json` and `BENCHMARKS.md`.
 - [x] Formally label baselines as `Simulated` across all benchmarks and documentation with explicit methodology rationale.
 - [x] Preserve all existing tags (`v0.0.1` through `v1.0.0`); tag `v1.0.1` on branch `release/v1.0.1`.
+
+---
+
+## Phase 10.2 Empirical Benchmarks, Real ZAP & v1.0.2 Release Tasks
+- [x] Investigate DeploySimulator for seeds 1337 and 98412; confirmed previous generator mutated only 2 of 9 routes/params, 0 flows, and 100% identical vulnerability sets.
+- [x] Fixed generator in `lab/simulator/deploy_simulator.py` so seeds produce genuinely different mutations across all four dimensions: routes, parameters, flow graphs, and vulnerability subsets.
+- [x] Audited `benchmarks/run_all.py` to eliminate all constants and simulated time; implemented empirical dev recall matching, measured discovery timestamps percentiles, and multi-seed held-out evaluation.
+- [x] Evaluated held-out benchmark across 5 new seeds (`[101, 202, 303, 404, 505]`) and reported empirical mean (55.0%) and spread (50.0% - 62.5%) as found.
+- [x] Executed real Lighthouse audit: Performance = 99, Accessibility = 91, Best Practices = 100, SEO = 82, INP = 0ms blocking latency, FCP/LCP = 558ms.
+- [x] Measured trace FPS: 60.0 fps (mean delta: 16.67ms, min: 16.50ms, max: 16.80ms).
+- [x] Removed browser-environment skip guard from `tests/frontend/test_e2e_ui.py`, installed Playwright Chromium in CI workflow, and verified test passes (1 passed in 13.32s).
+- [x] Installed portable OpenJDK 17 and executed real OWASP ZAP 2.17.0 baseline scan against Voyager; measured real alerts (3 alert types, 1 TP, recall 3.6%, precision 33.3%, scan time 37.0s) and replaced the simulated ZAP baseline row.
+- [x] Preserved all existing tags (`v0.0.1` through `v1.0.1`); release `v1.0.2` on branch `release/v1.0.2`.
 
 ---
 

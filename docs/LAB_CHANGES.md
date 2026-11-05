@@ -71,3 +71,6 @@ This document provides a transparent, auditable log of every modification made t
 
 ## Helper Scripts Elimination
 In accordance with Section 10, all ephemeral helper patch scripts (`patch_*.py`) created during earlier debugging phases have been permanently removed. All test runs and benchmarks execute directly through supported public APIs and test harnesses.
+
+## v1.0.2 Benchmarking Invariant
+During the v1.0.2 investigation and empirical benchmark execution, zero modifications were made to `lab/app.py`. All tests, real OWASP ZAP scans, and multi-seed held-out evaluations executed against the unmodified Voyager target.
