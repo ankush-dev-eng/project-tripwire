@@ -1,15 +1,16 @@
 """Tests for Deploy Simulator and Spec-Free Mutated Held-Out Targets."""
 
-import pytest
 import httpx
-from lab.simulator.deploy_simulator import DeploySimulator
+import pytest
+
 from backend.agents.recon_crawler import ReconCrawler
 from backend.graph.knowledge_graph import KnowledgeGraph
+from backend.safety.approval_gate import ApprovalGate
 from backend.safety.http_client import SafeHttpClient
 from backend.safety.kill_switch import KillSwitch
-from backend.safety.scope import ScopeManager
 from backend.safety.rate_limiter import RateLimiter
-from backend.safety.approval_gate import ApprovalGate
+from backend.safety.scope import ScopeManager
+from lab.simulator.deploy_simulator import DeploySimulator
 
 
 @pytest.mark.asyncio
@@ -66,8 +67,7 @@ async def test_recon_from_scratch_on_mutated_app() -> None:
     # Verify spec endpoints were discovered from scratch via JS bundle / probes
     spec_endpoints = [item["endpoint"] for item in spec]
     matched = [
-        ep for ep in spec_endpoints
-        if any(ep.split("{")[0] in dp for dp in discovered_paths)
+        ep for ep in spec_endpoints if any(ep.split("{")[0] in dp for dp in discovered_paths)
     ]
     discovery_recall = len(matched) / len(spec_endpoints)
     assert discovery_recall >= 0.80

@@ -11,6 +11,8 @@ Executes autonomous evaluation across:
 Updates BENCHMARKS.md and generates benchmarks/results.json.
 """
 
+# ruff: noqa: E402, F401
+
 from __future__ import annotations
 
 import asyncio
@@ -138,7 +140,9 @@ async def run_benchmark_suite(seed: int = 98412) -> dict[str, Any]:
     zap_baseline = ZAPStandardBaseline()
     zap_unauth_res = await zap_baseline.scan_unauthenticated(raw_async_client)
 
-    console.print("[cyan]Running Baseline 3: OWASP ZAP 2.17.0 (Authenticated Agency A & B Measured)...[/cyan]")
+    console.print(
+        "[cyan]Running Baseline 3: OWASP ZAP 2.17.0 (Authenticated Agency A & B Measured)...[/cyan]"
+    )
     zap_auth_res = await zap_baseline.scan_authenticated(raw_async_client)
     await raw_async_client.aclose()
 
@@ -258,10 +262,11 @@ async def run_benchmark_suite(seed: int = 98412) -> dict[str, Any]:
         discovered_paths = {ep["path"] for ep in orch_seed.kg.get_all_endpoints()}
         spec_endpoints = [item["endpoint"] for item in spec]
         discovered_spec_eps = [
-            ep for ep in spec_endpoints
-            if any(ep.split("{")[0] in dp for dp in discovered_paths)
+            ep for ep in spec_endpoints if any(ep.split("{")[0] in dp for dp in discovered_paths)
         ]
-        s_discovery_recall = len(discovered_spec_eps) / len(spec_endpoints) if spec_endpoints else 1.0
+        s_discovery_recall = (
+            len(discovered_spec_eps) / len(spec_endpoints) if spec_endpoints else 1.0
+        )
 
         # Match findings against spec
         matched_spec_ids: set[str] = set()
@@ -347,6 +352,7 @@ async def run_benchmark_suite(seed: int = 98412) -> dict[str, Any]:
     # 5. Run TRIPWIRE Sealed Voyager-B Evaluation (Once Per Release)
     console.print("[cyan]Running TRIPWIRE (Sealed Voyager-B Evaluation)...[/cyan]")
     from lab_b.app import app as app_b
+
     transport_b = httpx.ASGITransport(app=app_b)
     client_b = SafeHttpClient(
         scope_manager=scope_mgr,
@@ -393,11 +399,13 @@ async def run_benchmark_suite(seed: int = 98412) -> dict[str, Any]:
     b_discovery_recall = round(min(1.0, b_discovered / 25), 4)
 
     b_bl_items = [
-        v for v in b_vulns
+        v
+        for v in b_vulns
         if (v.get("class") or v.get("vuln_class")) in {"access_control", "business_logic"}
     ]
     b_bl_matched = [
-        vid for vid in matched_b_ids
+        vid
+        for vid in matched_b_ids
         if any(
             (v.get("id") or v.get("vuln_id")) == vid
             and (v.get("class") or v.get("vuln_class")) in {"access_control", "business_logic"}
@@ -417,7 +425,9 @@ async def run_benchmark_suite(seed: int = 98412) -> dict[str, Any]:
                 pass
     b_deltas.sort()
     b_p50 = round(b_deltas[int(len(b_deltas) * 0.50)], 2) if b_deltas else round(b_elapsed * 0.5, 2)
-    b_p95 = round(b_deltas[int(len(b_deltas) * 0.95)], 2) if b_deltas else round(b_elapsed * 0.95, 2)
+    b_p95 = (
+        round(b_deltas[int(len(b_deltas) * 0.95)], 2) if b_deltas else round(b_elapsed * 0.95, 2)
+    )
 
     console.print(
         f"[dim]Voyager-B: Recall={b_recall * 100:.1f}% ({len(matched_b_ids)}/{b_total_vulns}), Precision={b_precision * 100:.1f}%, Time={b_elapsed}s[/dim]"
@@ -608,17 +618,29 @@ def update_benchmarks_markdown(res: dict[str, Any]) -> None:
         higher_is_better=False,
     )
     status_p50 = _eval_status(
-        [dev["deploy_to_verified_p50_s"], held["deploy_to_verified_p50_s"], voy_b["deploy_to_verified_p50_s"]],
+        [
+            dev["deploy_to_verified_p50_s"],
+            held["deploy_to_verified_p50_s"],
+            voy_b["deploy_to_verified_p50_s"],
+        ],
         300.0,
         higher_is_better=False,
     )
     status_p95 = _eval_status(
-        [dev["deploy_to_verified_p95_s"], held["deploy_to_verified_p95_s"], voy_b["deploy_to_verified_p95_s"]],
+        [
+            dev["deploy_to_verified_p95_s"],
+            held["deploy_to_verified_p95_s"],
+            voy_b["deploy_to_verified_p95_s"],
+        ],
         600.0,
         higher_is_better=False,
     )
     status_discovery = _eval_status(
-        [dev["endpoint_discovery_recall"], held["endpoint_discovery_recall"], voy_b["endpoint_discovery_recall"]],
+        [
+            dev["endpoint_discovery_recall"],
+            held["endpoint_discovery_recall"],
+            voy_b["endpoint_discovery_recall"],
+        ],
         0.90,
     )
 
@@ -717,7 +739,11 @@ def display_summary_table(res: dict[str, Any]) -> None:
         0.70,
     )
     status_discovery = _eval_status(
-        [dev["endpoint_discovery_recall"], held["endpoint_discovery_recall"], voy_b["endpoint_discovery_recall"]],
+        [
+            dev["endpoint_discovery_recall"],
+            held["endpoint_discovery_recall"],
+            voy_b["endpoint_discovery_recall"],
+        ],
         0.90,
     )
 

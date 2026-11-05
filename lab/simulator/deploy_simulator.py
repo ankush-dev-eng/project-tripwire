@@ -171,7 +171,7 @@ class DeploySimulator:
             if item.get("route_alias"):
                 routes_list.append(item["route_alias"])
 
-        clean_routes = sorted(list(dict.fromkeys(routes_list)))
+        clean_routes = sorted(dict.fromkeys(routes_list))
 
         # Frontend JS bundle serving route catalog
         bundle_js = (
@@ -192,27 +192,31 @@ class DeploySimulator:
             val = next(iter(request.path_params.values()), "1")
             if "nonexistent" in val or "invalid" in val:
                 return JSONResponse({"detail": "Invoice not found"}, status_code=404)
-            return JSONResponse({
-                "invoice_id": "INV-HELD-001",
-                "booking_id": val,
-                "agency_id": "AGY-BETA",
-                "customer": "Corporate Travel Corp",
-                "amount": 450.0,
-                "card_number": "4111-2222-3333-4444",
-                "cvv": "123",
-                "paid": True,
-            })
+            return JSONResponse(
+                {
+                    "invoice_id": "INV-HELD-001",
+                    "booking_id": val,
+                    "agency_id": "AGY-BETA",
+                    "customer": "Corporate Travel Corp",
+                    "amount": 450.0,
+                    "card_number": "4111-2222-3333-4444",
+                    "cvv": "123",
+                    "paid": True,
+                }
+            )
 
         async def handle_confirm(request: Request) -> Response:
             val = next(iter(request.path_params.values()), "1")
             if "nonexistent" in val or "invalid" in val:
                 return JSONResponse({"detail": "Booking not found"}, status_code=404)
-            return JSONResponse({
-                "status": "CONFIRMED",
-                "booking_id": val,
-                "payment_status": "SKIPPED_UNPAID",
-                "message": "Booking confirmed without prior payment execution",
-            })
+            return JSONResponse(
+                {
+                    "status": "CONFIRMED",
+                    "booking_id": val,
+                    "payment_status": "SKIPPED_UNPAID",
+                    "message": "Booking confirmed without prior payment execution",
+                }
+            )
 
         async def handle_topup(request: Request) -> Response:
             try:
@@ -221,12 +225,14 @@ class DeploySimulator:
                 body = {}
             if not body:
                 return JSONResponse({"detail": "Missing topup amount"}, status_code=422)
-            return JSONResponse({
-                "status": "SUCCESS",
-                "amount": body.get("amount", 10000.0),
-                "new_balance": 50000.0,
-                "step_up_verified": False,
-            })
+            return JSONResponse(
+                {
+                    "status": "SUCCESS",
+                    "amount": body.get("amount", 10000.0),
+                    "new_balance": 50000.0,
+                    "step_up_verified": False,
+                }
+            )
 
         async def handle_logout(request: Request) -> Response:
             return JSONResponse({"status": "SUCCESS", "message": "Logged out successfully"})
@@ -239,11 +245,13 @@ class DeploySimulator:
             return resp
 
         async def handle_login(request: Request) -> Response:
-            return JSONResponse({
-                "access_token": "tok_held_out_login",
-                "token_type": "bearer",
-                "status": "AUTHENTICATED",
-            })
+            return JSONResponse(
+                {
+                    "access_token": "tok_held_out_login",
+                    "token_type": "bearer",
+                    "status": "AUTHENTICATED",
+                }
+            )
 
         async def handle_redirect(request: Request) -> Response:
             dest = (
@@ -254,11 +262,7 @@ class DeploySimulator:
             if not dest:
                 try:
                     body = await request.json()
-                    dest = (
-                        body.get("url")
-                        or body.get("target_url")
-                        or body.get("redirect_url")
-                    )
+                    dest = body.get("url") or body.get("target_url") or body.get("redirect_url")
                 except Exception:
                     pass
             if dest:
@@ -266,19 +270,23 @@ class DeploySimulator:
             return JSONResponse({"detail": "Missing destination URL"}, status_code=422)
 
         async def handle_documents(request: Request) -> Response:
-            return JSONResponse({
-                "status": "UPLOADED",
-                "filename": "uploaded_document.php",
-                "url": "/uploads/uploaded_document.php",
-            })
+            return JSONResponse(
+                {
+                    "status": "UPLOADED",
+                    "filename": "uploaded_document.php",
+                    "url": "/uploads/uploaded_document.php",
+                }
+            )
 
         async def handle_quote(request: Request) -> Response:
-            return JSONResponse({
-                "quote_id": "Q-LEGACY-PARTNER",
-                "fare": 80.0,
-                "discount": 0.45,
-                "version": "v2-legacy",
-            })
+            return JSONResponse(
+                {
+                    "quote_id": "Q-LEGACY-PARTNER",
+                    "fare": 80.0,
+                    "discount": 0.45,
+                    "version": "v2-legacy",
+                }
+            )
 
         async def handle_generic(request: Request) -> Response:
             return JSONResponse({"status": "OK", "endpoint": str(request.url.path)})
