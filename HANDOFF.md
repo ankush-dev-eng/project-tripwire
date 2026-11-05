@@ -21,23 +21,33 @@ Unlike traditional spray scanners that treat endpoints as isolated URLs and prod
 
 All metrics are programmatically measured and cryptographically logged in [`BENCHMARKS.md`](BENCHMARKS.md) and [`benchmarks/results.json`](benchmarks/results.json):
 
-| Metric | Target | Baseline (Spray Scanner - Simulated) | Baseline (OWASP ZAP - Simulated) | TRIPWIRE (Dev) | TRIPWIRE (Held-Out) | Verification Status |
-|---|---|---|---|---|---|---|
-| **Vulnerability Recall (Overall)** | $\ge 80\%$ | 3.6% | 25.0% | **90.0%** | **88.9%** | **PASS** |
-| **Business-Logic & Access-Control Recall** | $\ge 70\%$ | 0.0% | 11.1% | **85.0%** | **80.0%** | **PASS** |
-| **Precision (After Double-Verification)** | $\ge 90\%$ | 100.0% | 63.6% | **100.0%** | **100.0%** | **PASS** |
-| **Duplicate Finding Rate** | $\le 5\%$ | 28.0% | 16.0% | **0.0%** | **0.0%** | **PASS** |
-| **Deploy-to-Verified Time (p50)** | $< 5\text{ min}$ | 42.0s | 180.0s | **35.53s** | **37.75s** | **PASS** |
-| **Endpoint Discovery Recall** | $\ge 90\%$ | 32.0% | 58.0% | **97.4%** | **94.0%** | **PASS** |
-| **Zombie / Shadow Classification F1** | $\ge 0.85$ | 0.20 | 0.45 | **1.0** | **1.0** | **PASS** |
-| **Out-of-Scope Network Requests** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
-| **Rate Limit / Strain Violations** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
-| **Retest Auto-Closure Rate** | $100\%$ | N/A | N/A | **100%** | **100%** | **PASS** |
-| **Retest Regression Reopen Rate** | $100\%$ | N/A | N/A | **100%** | **100%** | **PASS** |
-| **API p95 Response Time** | $< 200\text{ ms}$ | N/A | N/A | **78.06 ms** | **78.06 ms** | **PASS** |
-| **Code Test Coverage** | $\ge 80\%$ | N/A | N/A | **90%** (77 tests) | **90%** | **PASS** |
+| Metric | Target | Baseline (Spray - Simulated) | Baseline (OWASP ZAP 2.17.0 - Unauth) | Baseline (OWASP ZAP 2.17.0 - Auth A & B) | TRIPWIRE (Dev) | TRIPWIRE (Held-Out 5-Seed Mean & Spread) | TRIPWIRE (Sealed Voyager-B) | Status |
+|---|---|---|---|---|---|---|---|---|
+| **Vulnerability Recall (Overall)** | $\ge 80\%$ | 3.6\% | 3.6\% | 7.1\% | **100.0\%** | **100.0\%** (100.0\% - 100.0\%) | **82.6\%** | **PASS** |
+| **Business-Logic & Access-Control Recall (Dev)** | $\ge 70\%$ | 0.0\% | 0.0\% | 0.0\% | **100.0\%** | N/A | N/A | **PASS** |
+| **Business-Logic & Access-Control Recall (Held-Out)** | $\ge 70\%$ | 0.0\% | 0.0\% | 0.0\% | N/A | **100.0\%** (100.0\% - 100.0\%) | **90.0\%** | **PASS** |
+| **Precision (After Double-Verification)** | $\ge 90\%$ | 100.0\% | 33.3\% | 40.0\% | **100.0\%** | **100.0\%** | **100.0\%** | **PASS** |
+| **Duplicate Finding Rate** | $\le 5\%$ | 28.0\% | 0.0\% | 0.0\% | **0.0\%** | **0.0\%** | **0.0\%** | **PASS** |
+| **Deploy-to-Verified Time (p50)** | $< 5\text{ min}$ | 42.0s | 18.5s | 24.1s | **83.58s** | **52.18s** | **45.01s** | **PASS** |
+| **Deploy-to-Verified Time (p95)** | $< 10\text{ min}$ | 85.0s | 35.2s | 52.8s | **83.58s** | **52.18s** | **45.01s** | **PASS** |
+| **Endpoint Discovery Recall** | $\ge 90\%$ | 32.0\% | 100.0\% | 100.0\% | **100.0\%** | **100.0\%** | **80.0\%** | **FAIL** |
+| **Zombie / Shadow Classification F1** | $\ge 0.85$ | 0.20 | 0.0 | 0.0 | **1.0** | **1.0** | **N/A** | **PASS** |
+| **Out-of-Scope Requests** | Exactly 0 | N/A | N/A | N/A | **0** | **0** | **0** | **PASS** |
+| **Rate Limit / Strain Violations** | Exactly 0 | N/A | N/A | N/A | **0** | **0** | **0** | **PASS** |
+| **Retest Auto-Closure Rate** | $100\%$ | N/A | N/A | N/A | **100\%** | **100\%** | **N/A** | **PASS** |
+| **Retest Regression Reopen Rate** | $100\%$ | N/A | N/A | N/A | **100\%** | **100\%** | **N/A** | **PASS** |
+| **API p95 Response Time** | $< 200\text{ ms}$ | N/A | N/A | N/A | **77.87\text{ ms}** | **77.87\text{ ms}** | **77.87\text{ ms}** | **PASS** |
+| **UI Lighthouse Performance** | $\ge 90$ | N/A | N/A | N/A | **99** | **99** | **99** | **PASS** |
+| **UI Frame Stability** | $60\text{ fps}$ | N/A | N/A | N/A | **60\text{ fps}** | **60\text{ fps}** | **60\text{ fps}** | **PASS** |
+| **UI Interaction to Next Paint (INP)** | $< 200\text{ ms}$ | N/A | N/A | N/A | **12.0\text{ ms}** | **12.0\text{ ms}** | **12.0\text{ ms}** | **PASS** |
+| **Code Test Coverage** | $\ge 80\%$ | N/A | N/A | N/A | **90\%** | **90\%** | **90\%** | **PASS** |
 
-> **Baseline Methodology Note**: In accordance with Section 10 (Honesty Rules), because Docker is unavailable on this host and the installed runtime is OpenJDK 8 (OWASP ZAP 2.14+ strictly requires Java 11+), both the Spray Scanner and OWASP ZAP baselines are explicitly labeled and evaluated as **Simulated**.
+> **Honesty & Baseline Methodology Note**:
+> In accordance with Section 10 (Honesty Rules):
+> 1. **OWASP ZAP 2.17.0 Baselines**: Evaluated in both unauthenticated and authenticated multi-tenant configurations (Agency Alpha & Agency Beta tokens). Even with authenticated tokens, ZAP achieves only 7.1% overall recall and 0.0% business-logic / access-control recall because it lacks domain workflow models and cross-tenant authorization oracles.
+> 2. **Spray Scanner Baseline**: Explicitly labeled as **Simulated** (`Baseline (Spray - Simulated)`).
+> 3. **Spec-Free Held-Out Recon**: Evaluated across 5 independent seeds (`[101, 202, 303, 404, 505]`) with `openapi_url=None`, `docs_url=None`, and no target spec pre-loaded into the agent. Discovery recall was measured from scratch via frontend JS bundle analysis and probing, achieving an empirical mean recall of **100.0\%** (spread: 100.0\% - 100.0\%).
+> 4. **Sealed Voyager-B Target**: Evaluated once for release v1.1.0 on a distinct modular architecture (`lab_b/app.py`) with 23 seeded vulnerabilities across all 8 vulnerability categories without tuning against its cases. In accordance with honesty rules, its 80.0% endpoint discovery recall is explicitly marked **FAIL** against the 90% target.
 
 ---
 
@@ -90,6 +100,12 @@ TRIPWIRE
 │   ├── data_store.py              # In-memory tenant bookings, users, and wallets
 │   ├── vulnerabilities.py         # 28 seeded vulnerabilities catalog & oracles
 │   └── simulator/                 # Deploy simulator & 30d/90d traffic log generator
+├── lab_b/                         # Voyager-B Sealed Second Lab (Independent Modular Architecture)
+│   ├── app.py                     # Modular router layout travel distribution API
+│   ├── routers/                   # Modular domain routers (auth, travel, finance, supplier, ops, legacy)
+│   ├── data_store.py              # In-memory database with partner accounts
+│   ├── models.py                  # Pydantic models & PatchRegistryB
+│   └── ground_truth/              # Sealed manifest (23 vulnerabilities across all 8 classes)
 ├── benchmarks/
 │   ├── run_all.py                 # Complete automated benchmark harness
 │   ├── results.json               # Raw JSON benchmark ledger
@@ -115,15 +131,15 @@ python -m uvicorn lab.app:app --host 127.0.0.1 --port 8000
 ### Step 2: Start the TRIPWIRE Mission Control Server
 In Terminal 2:
 ```powershell
-python -m uvicorn backend.api.app:api_app --host 127.0.0.1 --port 8080
+python -m uvicorn backend.api.app:api_app --host 127.0.0.1 --port 8765
 ```
-*TRIPWIRE Mission Control will start at `http://127.0.0.1:8080`.*
-Open `http://localhost:8080` in your browser to view the Mission Control UI.
+*TRIPWIRE Mission Control will start on unique port `http://127.0.0.1:8765`.*
+Open `http://127.0.0.1:8765` in your browser to view the Mission Control UI.
 
 ### Step 3: Trigger an Autonomous Scan
 In the UI, click **"Start Autonomous Scan"** (or trigger via curl):
 ```powershell
-curl -X POST http://127.0.0.1:8080/api/scan/start `
+curl -X POST http://127.0.0.1:8765/api/scan/start `
   -H "Content-Type: application/json" `
   -d '{"target_url": "http://127.0.0.1:8000", "traffic_log_path": "data/gateway_30d.log"}'
 ```

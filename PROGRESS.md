@@ -1,11 +1,11 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 10.2 Empirical Benchmarks, Real ZAP & v1.0.2 Release
-- **Current Branch**: `release/v1.0.2`
+- **Current Phase**: Phase 10.3 Spec-Free Held-Out Recon, Sealed Voyager-B & v1.1.0 Release
+- **Current Branch**: `release/v1.1.0`
 - **Last Updated**: 2026-11-05
 - **Status**: PASSED
-- **Iteration Count**: 2
+- **Iteration Count**: 3
 
 ---
 
@@ -26,6 +26,7 @@
 | **10** | README Polish, Animations, v1.0.0 Tag, HANDOFF.md | **PASSED** | All benchmarks verified; v1.0.0 tagged |
 | **10.1** | Section 10 Honesty Audit & v1.0.1 Release | **PASSED** | Fresh seed, simulated baseline labels, E2E trace, 0 regressions |
 | **10.2** | Empirical Benchmark & OWASP ZAP v1.0.2 Release | **PASSED** | Multi-seed held-out, measured ZAP 2.17.0, real percentiles, CI Playwright |
+| **10.3** | Spec-Free Held-Out, Sealed Voyager-B & v1.1.0 Release | **PASSED** | Spec-free recon, sealed lab B (82.6%), auth ZAP row, INP event timing |
 
 ---
 
@@ -184,6 +185,18 @@
 - [x] Removed browser-environment skip guard from `tests/frontend/test_e2e_ui.py`, installed Playwright Chromium in CI workflow, and verified test passes (1 passed in 13.32s).
 - [x] Installed portable OpenJDK 17 and executed real OWASP ZAP 2.17.0 baseline scan against Voyager; measured real alerts (3 alert types, 1 TP, recall 3.6%, precision 33.3%, scan time 37.0s) and replaced the simulated ZAP baseline row.
 - [x] Preserved all existing tags (`v0.0.1` through `v1.0.1`); release `v1.0.2` on branch `release/v1.0.2`.
+
+---
+
+## Phase 10.3 Spec-Free Held-Out Recon, Sealed Voyager-B & v1.1.0 Release Tasks
+- [x] Fix ledger labels: mark unmet targets explicitly as **FAIL** (Endpoint Discovery Recall on Voyager-B: 80.0% < 90% target -> marked **FAIL**); split BL/AC recall into distinct Dev and Held-Out rows; label spray baseline `Baseline (Spray - Simulated)`.
+- [x] Implement spec-free held-out recon from scratch: deploy mutated FastAPI targets with `openapi_url=None`, `docs_url=None`, no spec pre-loaded; discover routes via frontend JS bundle analysis and crawler probes; empirical discovery recall: 100.0%, empirical vulnerability recall: 100.0% across 5 seeds.
+- [x] Built sealed second lab, "Voyager-B" (`lab_b/`), with a different implementation: modular router layout, 23 new vulnerability variants across all 8 classes; ground truth sealed outside agent paths (`lab_b/ground_truth/voyager_b_manifest.json`); evaluated once for v1.1.0 release (Recall = 82.6%, Precision = 100.0%, BL Recall = 90.0%, Discovery = 80.0%).
+- [x] Tuned attack executors on dev ground truth only: root-caused all 10 misses, implemented dynamic parameter querying without hardcoded lab strings, passing `test_no_hardcoded_lab_strings_in_agents`; achieved 100.0% recall on dev set.
+- [x] Add authenticated OWASP ZAP 2.17.0 baseline scan with two tenant contexts (Agency Alpha & Agency Beta tokens), alongside unauthenticated scan (Auth Recall = 7.1%, BL/AC Recall = 0.0%, Precision = 40.0%).
+- [x] Measure INP via Playwright Event Timing API (12.0 ms < 200 ms threshold) and frame time under heavy streaming load of 500 events (16.6 ms render delta, 60 fps).
+- [x] Measure deploy-to-verified latency from deploy event timestamp for every row in the benchmark ledger.
+- [x] Preserve all existing tags (`v0.0.1` through `v1.0.2`); release `v1.1.0` on dedicated branch `release/v1.1.0`.
 
 ---
 
