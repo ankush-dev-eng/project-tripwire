@@ -1,0 +1,213 @@
+{
+  "system": "Voyager-B Enterprise Distribution",
+  "total_vulnerabilities": 23,
+  "vulnerabilities": [
+    {
+      "id": "VULN-B-AC-01",
+      "class": "access_control",
+      "name": "Cross-Agency Partner Ticket BOLA",
+      "endpoint": "/v2/travel/tickets/{ticket_id}",
+      "method": "GET",
+      "parameter": "ticket_id",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-AC-02",
+      "class": "access_control",
+      "name": "Financial Statement IDOR",
+      "endpoint": "/v2/finance/statements/{stmt_id}",
+      "method": "GET",
+      "parameter": "stmt_id",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-AC-03",
+      "class": "access_control",
+      "name": "Passenger Roster BOLA on Reservations",
+      "endpoint": "/v2/travel/reservations/{res_id}/passengers",
+      "method": "GET",
+      "parameter": "res_id",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-B-BOPLA-01",
+      "class": "access_control",
+      "name": "Mass Assignment on User Status / Superuser Flag",
+      "endpoint": "/v2/iam/users/{user_id}/status",
+      "method": "PUT",
+      "parameter": "is_superuser",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-B-BOPLA-02",
+      "class": "access_control",
+      "name": "Account Overdraft Credit Limit Tampering",
+      "endpoint": "/v2/finance/accounts/{acct_id}",
+      "method": "PUT",
+      "parameter": "overdraft_limit",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-BL-01",
+      "class": "business_logic",
+      "name": "Negative Seat Count Order Tampering",
+      "endpoint": "/v2/travel/orders",
+      "method": "POST",
+      "parameter": "seat_count",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-BL-02",
+      "class": "business_logic",
+      "name": "Zero-Price Order Submission Bypass",
+      "endpoint": "/v2/travel/orders",
+      "method": "POST",
+      "parameter": "unit_price",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-B-BL-03",
+      "class": "business_logic",
+      "name": "Promo Credit Replay without Nonce Expiry",
+      "endpoint": "/v2/finance/credits/apply",
+      "method": "POST",
+      "parameter": "nonce",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-BL-04",
+      "class": "business_logic",
+      "name": "Double Refund on Travel Orders",
+      "endpoint": "/v2/travel/orders/{order_id}/refund",
+      "method": "POST",
+      "parameter": "order_id",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-BL-05",
+      "class": "business_logic",
+      "name": "Order Finalize without Prior Settlement",
+      "endpoint": "/v2/travel/orders/{order_id}/finalize",
+      "method": "POST",
+      "parameter": "order_id",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-B-AUTH-01",
+      "class": "auth_session",
+      "name": "Bearer Token Alg None & Header Bypass",
+      "endpoint": "/v2/iam/tokens/exchange",
+      "method": "POST",
+      "parameter": "Authorization",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-B-AUTH-02",
+      "class": "auth_session",
+      "name": "Predictable Recovery PIN Generation",
+      "endpoint": "/v2/iam/password/recover",
+      "method": "POST",
+      "parameter": "email",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-AUTH-03",
+      "class": "auth_session",
+      "name": "Token Remains Active Post-Logout",
+      "endpoint": "/v2/iam/logout",
+      "method": "POST",
+      "parameter": "Authorization",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-B-INJ-01",
+      "class": "injection",
+      "name": "SQL Filter Injection on Catalog Search",
+      "endpoint": "/v2/travel/catalog/search",
+      "method": "GET",
+      "parameter": "carrier",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-INJ-02",
+      "class": "injection",
+      "name": "Command Injection in Supplier DNS Diagnostic Tool",
+      "endpoint": "/v2/supplier/dns-lookup",
+      "method": "GET",
+      "parameter": "domain",
+      "severity": "critical"
+    },
+    {
+      "id": "VULN-B-INJ-03",
+      "class": "injection",
+      "name": "CSV Formula Injection on Partner Export",
+      "endpoint": "/v2/supplier/export-csv",
+      "method": "POST",
+      "parameter": "partner_name",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-B-HYG-01",
+      "class": "api_hygiene",
+      "name": "Prometheus Metrics Database URL Leak",
+      "endpoint": "/v2/ops/prometheus",
+      "method": "GET",
+      "parameter": null,
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-HYG-02",
+      "class": "api_hygiene",
+      "name": "Staff PII Disclosure (SSN and Address)",
+      "endpoint": "/v2/iam/agents",
+      "method": "GET",
+      "parameter": null,
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-HYG-03",
+      "class": "api_hygiene",
+      "name": "Operational Crash Traceback Disclosure",
+      "endpoint": "/v2/ops/crash-report",
+      "method": "GET",
+      "parameter": "trace",
+      "severity": "low"
+    },
+    {
+      "id": "VULN-B-SSR-01",
+      "class": "server_side",
+      "name": "Loopback SSRF in Webhook Registration",
+      "endpoint": "/v2/supplier/webhooks",
+      "method": "POST",
+      "parameter": "destination_url",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-SSR-02",
+      "class": "server_side",
+      "name": "SSRF & File Protocol in Feed Importer",
+      "endpoint": "/v2/supplier/feed-import",
+      "method": "GET",
+      "parameter": "url",
+      "severity": "high"
+    },
+    {
+      "id": "VULN-B-ZOM-01",
+      "class": "zombie_shadow",
+      "name": "Deprecated Unauthenticated Legacy Calculator",
+      "endpoint": "/legacy/v1/fare-calculator",
+      "method": "GET",
+      "parameter": "miles",
+      "severity": "medium"
+    },
+    {
+      "id": "VULN-B-SHA-01",
+      "class": "zombie_shadow",
+      "name": "Undocumented Shadow Settlement Reconcile Route",
+      "endpoint": "/v2/internal/settlements/reconcile",
+      "method": "POST",
+      "parameter": null,
+      "severity": "medium"
+    }
+  ]
+}
