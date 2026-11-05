@@ -78,3 +78,5 @@ data/audit.jsonl
 *.sqlite3
 !lab/fixtures/*.db
 
+
+tests/frontend/videos/
