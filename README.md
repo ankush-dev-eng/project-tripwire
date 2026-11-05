@@ -127,7 +127,7 @@ TRIPWIRE treats safety as an immutable architectural guarantee:
 |---|---|---|
 | **Single Egress Point** | `SafeHttpClient` is the only authorized HTTP transport. | AST linting test fails if `requests`, `httpx`, or `urllib` are imported elsewhere. |
 | **Strict Scope Allowlist** | Target restrictions defined in `scope.yaml` (default `127.0.0.1` lab targets). | Out-of-scope targets trigger an immediate hard halt and audit alarm. |
-| **Immutable Scope** | `scope.yaml` cannot be altered by agent logic. | File integrity tests enforce read-only semantics for agents. |
+| **Immutable Scope** | `scope.yaml` cannot be altered by agent logic. | Runtime SHA-256 hash comparison (`verify_file_integrity`) trips the KillSwitch on tampering. |
 | **Strain Throttling** | Dynamic latency and 5xx error tracking. | Automatically throttles throughput if p90 response time exceeds 500ms. |
 | **Global Kill Switch** | Thread-safe atomic flag in memory and filesystem. | Instantly terminates active and pending requests. |
 | **Audit Log & Replay** | SHA-256 hash-chained `audit.jsonl`. | Every outbound request and response is replayable for human audit. |
@@ -139,21 +139,23 @@ TRIPWIRE treats safety as an immutable architectural guarantee:
 
 All benchmark metrics are programmatically measured by `python benchmarks/run_all.py` and maintained in [`BENCHMARKS.md`](BENCHMARKS.md) and [`benchmarks/results.json`](benchmarks/results.json):
 
-| Metric | Target | Baseline (Spray Scanner) | Baseline (OWASP ZAP) | TRIPWIRE (Dev) | TRIPWIRE (Held-Out) | Status |
+| Metric | Target | Baseline (Spray Scanner - Simulated) | Baseline (OWASP ZAP - Simulated) | TRIPWIRE (Dev) | TRIPWIRE (Held-Out) | Status |
 |---|---|---|---|---|---|---|
 | **Vulnerability Recall (Overall)** | $\ge 80\%$ | 3.6\% | 25.0\% | **90.0\%** | **88.9\%** | **PASS** |
 | **Business-Logic & Access-Control Recall** | $\ge 70\%$ | 0.0\% | 11.1\% | **85.0\%** | **80.0\%** | **PASS** |
 | **Precision (After Double-Verification)** | $\ge 90\%$ | 100.0\% | 63.6\% | **100.0\%** | **100.0\%** | **PASS** |
 | **Duplicate Finding Rate** | $\le 5\%$ | 28.0\% | 16.0\% | **0.0\%** | **0.0\%** | **PASS** |
-| **Deploy-to-Verified Time (p50)** | $< 5\text{ min}$ | 42.0s | 180.0s | **35.5s** | **37.7s** | **PASS** |
+| **Deploy-to-Verified Time (p50)** | $< 5\text{ min}$ | 42.0s | 180.0s | **35.53s** | **37.75s** | **PASS** |
 | **Endpoint Discovery Recall** | $\ge 90\%$ | 32.0\% | 58.0\% | **97.4\%** | **94.0\%** | **PASS** |
 | **Zombie / Shadow Classification F1** | $\ge 0.85$ | 0.20 | 0.45 | **1.0** | **1.0** | **PASS** |
 | **Out-of-Scope Requests** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
 | **Rate Limit / Strain Violations** | Exactly 0 | N/A | N/A | **0** | **0** | **PASS** |
 | **Retest Auto-Closure Rate** | $100\%$ | N/A | N/A | **100\%** | **100\%** | **PASS** |
 | **Retest Regression Reopen Rate** | $100\%$ | N/A | N/A | **100\%** | **100\%** | **PASS** |
-| **API p95 Response Time** | $< 200\text{ ms}$ | N/A | N/A | **78.5\text{ ms}** | **78.5\text{ ms}** | **PASS** |
-| **Code Test Coverage** | $\ge 80\%$ | N/A | N/A | **90\%** (76 tests) | **90\%** | **PASS** |
+| **API p95 Response Time** | $< 200\text{ ms}$ | N/A | N/A | **78.06\text{ ms}** | **78.06\text{ ms}** | **PASS** |
+| **Code Test Coverage** | $\ge 80\%$ | N/A | N/A | **90\%** (77 tests) | **90\%** | **PASS** |
+
+> **Baseline Methodology Note**: In accordance with Section 10 (Honesty Rules), because Docker is unavailable on this host and the installed runtime is OpenJDK 8 (OWASP ZAP 2.14+ strictly requires Java 11+), both the Spray Scanner and OWASP ZAP baselines are explicitly labeled and evaluated as **Simulated**.
 
 ---
 

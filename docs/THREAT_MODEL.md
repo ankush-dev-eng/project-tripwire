@@ -121,7 +121,7 @@ TRIPWIRE enforces a multi-tiered safety architecture ensuring safe operation:
 ```
 
 1. **AST Egress Linting**: Automated static analysis inspects every agent file to verify raw socket or standard HTTP libraries (`requests`, raw `urllib`, `aiohttp`, raw `httpx.Client`) are never imported or invoked outside `SafeHttpClient`.
-2. **Immutable Target Allowlist**: `scope.yaml` is immutable to agents and restricted strictly to testbed targets (`127.0.0.1`, `localhost`).
+2. **Target Allowlist Integrity**: Target boundaries in `scope.yaml` are cryptographically verified at runtime using SHA-256 baseline hashing (`verify_file_integrity`); any unauthorized filesystem alteration instantly trips the `KillSwitch` and aborts all execution.
 3. **Double-Proof Zero False-Positive Gate**: A finding is marked `VERIFIED` if and only if both the primary exploit succeeds and a counter-factual negative control succeeds, eliminating noisy false alarms.
 4. **Contextual Severity Multipliers**: Business asset weighting prioritizes payment routes, wallet transactions, and traveler PII over static catalog endpoints.
 5. **Human-in-the-Loop Approval Queue**: Destructive operations (balance top-up, bulk cancellations, account deletions) require explicit operator authorization before execution.
