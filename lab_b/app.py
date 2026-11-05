@@ -41,6 +41,7 @@ app_b.include_router(legacy_router)
 
 
 @app_b.get("/static/portal.js")
+@app_b.get("/static/bundle.js")
 async def client_portal_bundle() -> PlainTextResponse:
     """Frontend route bundle for Voyager-B."""
     js_code = """
@@ -88,3 +89,6 @@ async def toggle_patch(req: PatchToggleRequest) -> dict[str, Any]:
 @app_b.get("/lab_b/patches")
 async def get_patches() -> dict[str, bool]:
     return PatchRegistryB.get_states()
+
+
+app = app_b
