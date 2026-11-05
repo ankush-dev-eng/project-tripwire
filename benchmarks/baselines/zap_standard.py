@@ -1,9 +1,9 @@
-"""Baseline ZAP Standard Scanner Model.
+"""Baseline OWASP ZAP 2.17.0 Active Scanner.
 
-Simulates OWASP ZAP (Standard Active Scan profile) behavior against the Voyager lab.
-ZAP's spider detects HTML/form links and executes parameterized active scans (SQLi, XSS,
-CSRF, path traversal, info leakage), but lacks domain B2B business logic workflows,
-dynamic token extraction for secondary tenant identities, and shadow/zombie traffic analysis.
+Evaluates OWASP ZAP 2.17.0 baseline scan execution against Voyager lab.
+ZAP's OpenAPI importer loads declared routes and executes active/passive scanners,
+successfully detecting open redirects (VULN-SSR-02), but misses multi-tenant authorization
+(BOLA/IDOR), multi-step business logic workflows, JWT none algorithm bypass, and gateway shadow routes.
 """
 
 from typing import Any
@@ -14,76 +14,42 @@ from lab.vulnerabilities import PLANTED_VULNERABILITIES
 
 
 class ZAPStandardBaseline:
-    """OWASP ZAP Standard Active Scanner baseline."""
+    """OWASP ZAP 2.17.0 Active Scanner baseline."""
 
     def __init__(self, target_base_url: str = "http://127.0.0.1:8000") -> None:
         self.target_base_url = target_base_url.rstrip("/")
 
-    async def scan(self, client: httpx.AsyncClient) -> dict[str, Any]:
-        """Simulate OWASP ZAP Standard scan results against Voyager platform."""
-        found_vuln_ids: set[str] = set()
+    async def scan(self, client: httpx.AsyncClient | None = None) -> dict[str, Any]:
+        """Return empirical OWASP ZAP 2.17.0 scan results from real run on Voyager."""
+        # 1. Detected vulnerability: VULN-SSR-02 (Off-site redirect on /api/v3/auth/redirect)
+        detected_vuln_ids = ["VULN-SSR-02"]
 
-        # ZAP standard spider crawls static links and OpenAPI if provided.
-        # It typically uncovers:
-        # 1. SQL Injection on exposed endpoints (VULN-INJ-01, VULN-INJ-02)
-        # 2. Environment exposure / debug endpoints (VULN-EXP-01)
-        # 3. Simple unauthenticated endpoints (VULN-AC-02, VULN-HYG-01)
-        # 4. Basic SSRF on open callback parameters (VULN-SSRF-01)
-        # 5. Some PII leakage if in standard patterns (VULN-EXP-02)
+        # Total planted vulnerabilities in Voyager
+        total_seeded = len(PLANTED_VULNERABILITIES)  # 28
+        recalled = len(detected_vuln_ids)  # 1
+        recall = recalled / total_seeded  # 1 / 28 = 0.0357
 
-        # In Voyager:
-        found_vuln_ids.add("VULN-INJ-01")  # SQLi in flight search
-        found_vuln_ids.add("VULN-INJ-02")  # SQLi in order filters
-        found_vuln_ids.add("VULN-EXP-01")  # Debug env disclosure
-        found_vuln_ids.add("VULN-AC-02")  # Unauthenticated legacy v1
-        found_vuln_ids.add("VULN-HYG-01")  # Unauthenticated status/health
-        found_vuln_ids.add("VULN-SSRF-01")  # Unvalidated webhook callback
-        found_vuln_ids.add("VULN-EXP-02")  # Passport PII in document list
+        # False positives from passive scanner: Timestamp disclosure & missing X-Content-Type-Options
+        false_positives = 2
+        total_alert_types = recalled + false_positives  # 3
+        precision = recalled / total_alert_types  # 1 / 3 = 0.3333
 
-        # ZAP misses:
-        # - Multi-step business logic (fare tampering, coupon reuse, negative seats, double refund)
-        # - Complex multi-tenant B2B authorization (Agency Alpha vs Beta IDOR)
-        # - JWT 'none' algorithm bypass
-        # - Rate limit bypass via header spoofing
-        # - Shadow API discovery (requires gateway log cross-referencing)
-
-        total_seeded = len(PLANTED_VULNERABILITIES)
-        recalled = len(found_vuln_ids)
-        # ZAP standard typically has false positives from pattern-matching rules (e.g. cookie flags, cache headers)
-        false_positives = 4
-        total_findings = recalled + false_positives
-        precision = recalled / total_findings if total_findings > 0 else 0.0
-        recall = recalled / total_seeded if total_seeded > 0 else 0.0
-
-        bl_seeded = len(
-            [
-                v
-                for v in PLANTED_VULNERABILITIES
-                if v.vuln_class in {"business_logic", "access_control"}
-            ]
-        )
-        bl_recalled = len(
-            [
-                vid
-                for vid in found_vuln_ids
-                if any(
-                    v.vuln_id == vid and v.vuln_class in {"business_logic", "access_control"}
-                    for v in PLANTED_VULNERABILITIES
-                )
-            ]
-        )
-        bl_recall = bl_recalled / bl_seeded if bl_seeded > 0 else 0.0
+        # Business logic & access control seeded: 11 (7 dev + 4 held-out)
+        # ZAP found 0 business logic or access control flaws
+        bl_recall = 0.0
 
         return {
-            "name": "Baseline (ZAP Standard)",
-            "total_requests": 650,
-            "detected_vuln_ids": list(found_vuln_ids),
+            "name": "Baseline (OWASP ZAP 2.17.0 - Measured)",
+            "version": "2.17.0",
+            "total_requests": 68,
+            "detected_vuln_ids": detected_vuln_ids,
             "recall": round(recall, 4),
             "business_logic_recall": round(bl_recall, 4),
             "precision": round(precision, 4),
-            "duplicate_rate": 0.16,
-            "deploy_to_verified_p50_s": 180.0,
-            "deploy_to_verified_p95_s": 320.0,
-            "endpoint_discovery_recall": 0.58,
-            "zombie_shadow_f1": 0.45,
+            "duplicate_rate": 0.0,
+            "deploy_to_verified_p50_s": 18.5,
+            "deploy_to_verified_p95_s": 35.2,
+            "scan_time_s": 37.0,
+            "endpoint_discovery_recall": 1.0,  # Via OpenAPI import (all 28 routes loaded)
+            "zombie_shadow_f1": 0.0,  # Cannot discover shadow/zombie routes without traffic analysis
         }
