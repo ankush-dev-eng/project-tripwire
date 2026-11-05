@@ -1,8 +1,8 @@
 # TRIPWIRE Autonomous Build Progress & State Memory
 
 ## Metadata
-- **Current Phase**: Phase 8 - Frontend UI (Mission Control, Knowledge Graph, Palette)
-- **Current Branch**: `phase/08-frontend-ui`
+- **Current Phase**: Phase 10 Post-Release Audit & v1.0.1 Release
+- **Current Branch**: `release/v1.0.1`
 - **Last Updated**: 2026-11-05
 - **Status**: PASSED
 - **Iteration Count**: 1
@@ -22,8 +22,9 @@
 | **6** | Triage, Severity Scoring, Retest Automation | **PASSED** | 100% patched flaws closed; regressions reopened |
 | **7** | Orchestrator, Live WebSocket Stream, Approvals Queue | **PASSED** | p95 latency < 200ms; event delivery < 1s |
 | **8** | Frontend UI (Mission Control, Knowledge Graph, Palette) | **PASSED** | Clean tsc compile, 0 console errors, on-palette styling |
-| **9** | Hardening, Threat Model, Benchmarking | PLANNED | Test coverage >= 80%; BENCHMARKS.md honest |
-| **10** | README Polish, Animations, v1.0.0 Tag, HANDOFF.md | PLANNED | All benchmarks verified; v1.0.0 tagged |
+| **9** | Hardening, Threat Model, Benchmarking | **PASSED** | Test coverage >= 80%; BENCHMARKS.md honest |
+| **10** | README Polish, Animations, v1.0.0 Tag, HANDOFF.md | **PASSED** | All benchmarks verified; v1.0.0 tagged |
+| **10.1** | Section 10 Honesty Audit & v1.0.1 Release | **PASSED** | Fresh seed, simulated baseline labels, E2E trace, 0 regressions |
 
 ---
 
@@ -156,6 +157,19 @@
 - [x] Author comprehensive `HANDOFF.md` containing runbooks, test instructions, and architecture breakdown.
 - [x] Merge to `main`, tag `v1.0.0`, push tags, and verify final CI.
 - [x] All 10 Phases Completed & Tagged (v0.0.1 -> v1.0.0).
+
+---
+
+## Phase 10.1 Honesty Audit & v1.0.1 Release Tasks
+- [x] Execute Playwright E2E navigation across all 7 views, CLS (< 0.1), and 60 FPS performance trace (`tests/frontend/test_e2e_ui.py`, `tests/frontend/trace.zip`).
+- [x] Run Lighthouse audit via Chrome DevTools MCP (Best Practices: 100, Accessibility: 91).
+- [x] Fix `get_safety_status` regressions on `ScopeManager` properties (`config`, `allowed_targets`) and `RateLimiter` properties (`requests_per_minute`, `max_concurrent_requests`).
+- [x] Eliminate all temporary `patch_*.py` helper scripts and document all 4 historical commits touching `lab/app.py` in `docs/LAB_CHANGES.md`.
+- [x] Correct false scope "read-only" claim in `README.md`, `HANDOFF.md`, and `docs/THREAT_MODEL.md` to runtime SHA-256 baseline hash comparison (`verify_file_integrity`) tripping `KillSwitch`.
+- [x] Reconcile test metrics across documentation: 77 tests passed (100% pass rate in 1m 25s), 90% statement coverage across 2,558 statements.
+- [x] Run benchmark suite on fresh, uninspected seed `98412`; report metrics as-is in `benchmarks/results.json` and `BENCHMARKS.md`.
+- [x] Formally label baselines as `Simulated` across all benchmarks and documentation with explicit methodology rationale.
+- [x] Preserve all existing tags (`v0.0.1` through `v1.0.0`); tag `v1.0.1` on branch `release/v1.0.1`.
 
 ---
 
